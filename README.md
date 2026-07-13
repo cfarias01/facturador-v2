@@ -1,5 +1,3 @@
-<img src="icon_pro5.png" width="120">
-
 # **Facturador SRI GS**
 
 1. git clone
