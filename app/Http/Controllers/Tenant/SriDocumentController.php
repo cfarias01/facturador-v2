@@ -2576,6 +2576,7 @@ class SriDocumentController extends Controller
                             <totalConImpuestos>';
 
                     foreach ($impuestos as $value) {
+                        if ($value['base'] > 0) {
                         $xml .= '
                             <totalImpuesto>
                                 <codigo>2</codigo>
@@ -2584,6 +2585,7 @@ class SriDocumentController extends Controller
                                 <tarifa>' . $value['IVA'] . '</tarifa>
                                 <valor>' . round($value['valor'], 2) . '</valor>
                             </totalImpuesto>';
+                        }
                     }
                     /*
                     if ($documento->valorIva12 > 0) {
