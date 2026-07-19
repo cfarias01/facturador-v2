@@ -184,11 +184,8 @@ return [
         Modules\LevelAccess\Providers\RouteServiceProvider::class,
         Modules\Offline\Providers\RouteServiceProvider::class,
 
-        // Hyn multi tenancy.
-        Hyn\Tenancy\Providers\TenancyProvider::class,
-        // Hyn multi tenancy webserver integration.
-        Hyn\Tenancy\Providers\WebserverProvider::class,
-
+        Stancl\Tenancy\TenancyServiceProvider::class,
+        App\Providers\TenancyServiceProvider::class,
 
     ],
 

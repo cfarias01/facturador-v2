@@ -99,7 +99,7 @@ class BackupDatabase extends Command
 
     private function initDbConfig(){
 
-        $dbConfig = config('database.connections.' . config('tenancy.db.system-connection-name', 'system'));
+        $dbConfig = config('database.connections.' . config('tenancy.database.central_connection', 'system'));
 
         $this->host = Arr::first(Arr::wrap($dbConfig['host'] ?? ''));
         $this->username = $dbConfig['username'];
