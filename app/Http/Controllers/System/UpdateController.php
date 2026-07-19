@@ -8,7 +8,7 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
-use GrahamCampbell\Markdown\Facades\Markdown;
+use League\CommonMark\CommonMarkConverter;
 use Artisan;
 
 class UpdateController extends Controller
@@ -132,6 +132,6 @@ class UpdateController extends Controller
     public function changelog() {
 
         $file = File::get(base_path('CHANGELOG.md'));
-        return Markdown::convertToHtml($file);
+        return (new CommonMarkConverter())->convert($file)->getContent();
     }
 }
