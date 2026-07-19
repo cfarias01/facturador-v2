@@ -9,6 +9,9 @@
         "prod": "npm run production",
         "production": "mix --production"
     },
+    "overrides": {
+        "webpack": "5.75.0"
+    },
     "devDependencies": {
         "@popperjs/core": "^2.10.2",
         "axios": "^1.10.0",
