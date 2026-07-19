@@ -16,7 +16,6 @@
         "econea/nusoap": "^0.9",
         "guzzlehttp/guzzle": "^7.4",
         "html2text/html2text": "^4.3",
-        "hyn/multi-tenant": "*",
         "ifsnop/mysqldump-php": "^2.12",
         "imangazaliev/didom": "^1.16",
         "intervention/image": "^2.7",

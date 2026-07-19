@@ -42,18 +42,49 @@ cualquier persona o sesión futura retome el trabajo sin perder contexto. Rama d
         `Illuminate\Http\Middleware\HandleCors` nativo con el mismo `config/cors.php`).
   - [x] `database/seeds` → `database/seeders` (convención Laravel 8+).
   - [x] Verificado: boot OK (Laravel 10.50.2), `route:list` resuelve 99 rutas sin errores.
-        **Pendiente**: correr el checklist completo de `qa-checklist.md` contra una BD de
-        prueba con tenants reales — no se hizo por no tener ese entorno disponible en esta
-        sesión.
-- [ ] **Fase 2 — Reemplazo de `hyn/multi-tenant` por `stancl/tenancy`** (mayor riesgo, **ahora
-      obligatoria antes de seguir**)
+  - [ ] **Pendiente, no bloqueante**: `Swift_SmtpTransport`/`Swift_Mailer`/
+        `Swift_RfcComplianceException` siguen usados directamente (sin pasar por el Mail
+        facade de Laravel) en `Tenant\DocumentController.php` y `Tenant\EmailController.php`/
+        `SriDocumentController.php`. Sigue funcionando porque `swiftmailer/swiftmailer` sigue
+        instalado, pero es codigo legacy a migrar a Symfony Mailer en la Fase 4.
+- [x] **Fase 2 — Reemplazo de `hyn/multi-tenant` por `stancl/tenancy`** (mayor riesgo — completa)
   - Confirmado empíricamente (`composer require laravel/framework:^11.0 --dry-run`):
     `hyn/multi-tenant` 5.9.1 declara `require laravel/framework ^9.0|^10.0` y bloquea duro en
-    Laravel 11. Ya no se puede posponer esta fase — es el próximo paso obligatorio.
-  - Confirmado empíricamente (Fase 0): no existe ninguna carpeta `tenancy/<uuid>/` en
-    `storage/` ni en el repo, y `config/tenancy.php` tiene `'disk' => null` — nadie usa hoy la
-    personalización de vistas/rutas/traducciones por tenant de Hyn. Se puede descartar esa
-    función sin reemplazo.
+    Laravel 11. Por eso esta fase pasó a ser obligatoria antes de seguir subiendo versión.
+  - Confirmado empíricamente (Fase 0): no existía ninguna carpeta `tenancy/<uuid>/` en
+    `storage/` ni en el repo, y `config/tenancy.php` tenía `'disk' => null` — nadie usaba la
+    personalización de vistas/rutas/traducciones por tenant de Hyn. Se descartó esa función
+    sin reemplazo.
+  - `config/tenancy.php` reescrito para stancl (central_connection='system', prefix de BD
+    tomado de `PREFIX_DATABASE`, solo `DatabaseTenancyBootstrapper`). `App\Models\System\Tenant`
+    y `App\Models\System\Domain` (con accessors de compat `uuid`/`fqdn`/`hostnames` para no
+    tocar cada lectura antigua). `App\Providers\TenancyServiceProvider` (wiring de eventos:
+    `TenantCreated` → crea+migra la BD sincrono, igual que el auto-create+auto-migrate de hyn).
+  - `App\Traits\UsesTenantConnection`/`UsesSystemConnection` reemplazan a los traits de Hyn en
+    ~64 modelos. `App\Support\Tenancy\Environment` es un shim de compatibilidad con la API de
+    `Hyn\Tenancy\Environment::tenant()` para minimizar el diff en ~16 controllers/comandos/jobs
+    que cambiaban de tenant activo.
+  - `routes/web.php`/`routes/api.php` (y los 8 módulos) separados en versión central y
+    `routes/tenant.php`/`routes/tenant_api.php` (tenant, vía `InitializeTenancyByDomain` +
+    `PreventAccessFromCentralDomains`, sin `Route::domain()` manual).
+  - `System\ClientController` (provisión/baja de tenants) reescrito: `Tenant::create()` +
+    `$tenant->domains()->create()` reemplazan a `WebsiteRepository`/`HostnameRepository`;
+    `destroy()` respeta `TENANCY_DATABASE_AUTO_DELETE` igual que antes.
+  - **Bug crítico encontrado y corregido durante la validación**: a diferencia de hyn (que
+    nunca tocaba `database.default`), el `DatabaseTenancyBootstrapper` de stancl sí lo cambia
+    mientras el tenant está activo. Esto expuso que 11 modelos `System` (`Client`, `Plan`,
+    `Configuration`, `Module`, etc.) importaban el trait de conexión pero nunca lo aplicaban
+    (`use X;` faltante dentro de la clase) — dependían en silencio de que el default nunca
+    cambiara. Corregido en todos; `TrackApiPeruServices` además tenía el trait equivocado.
+  - **Se encontraron y limpiaron ~38 referencias a controllers `Tenant\*` inexistentes en todo
+    el historial del repo** (Item, Person, SaleNote, Purchase, Quotation, Dispatch, Pos, etc.)
+    — confirmado con el usuario que son funcionalidad no usada/removida, no una regresión de
+    esta migración.
+  - Validado end-to-end (sin datos preexistentes): creación completa de un tenant nuevo
+    (BD + migración + seed de company/configuration/establishment/warehouse/series/user),
+    login HTTP real 200, baja de tenant con borrado de BD. También validado contra el tenant
+    real preexistente `carlos` (BD `tenancy_carlos`).
+  - `hyn/multi-tenant` removido de `composer.json`/`composer.lock`.
 - [ ] **Fase 3 — Saltos Laravel 10 → 11 → 12 → 13**
 - [ ] **Fase 4 — Limpieza final de dependencias y hardening**
 
@@ -61,21 +92,6 @@ Detalle completo de cada fase: ver el plan original en el historial de conversac
 a Claude que lo regenere a partir de este documento — el resumen de cada fase está más abajo.
 
 ## Resumen de fases pendientes
-
-### Fase 1 — Laravel 9 → 10
-`composer require laravel/framework:^10.0`, seguir la guía oficial de upgrade 9→10, arreglar
-referencias a `Swift_RfcComplianceException` en `EmailController.php` (Symfony Mailer),
-renombrar `database/seeds` → `database/seeders` (y su classmap en `composer.json`). Probar si
-`hyn/multi-tenant` sigue arrancando; si no, combinar con la Fase 2.
-
-### Fase 2 — Tenancy: `hyn/multi-tenant` → `stancl/tenancy`
-Puntos de reescritura: conexión dinámica por tenant (`config/tenancy.php` →
-`Hyn\Tenancy\Database\Connection`), ~69 modelos que heredan `ModelTenant`/`UsesTenantConnection`,
-provisión de tenant en `ClientController::store()/destroy()` (hoy sin transacción — corregir de
-paso), routing por dominio en `routes/web.php`/`routes/api.php` (hoy bifurcan todo el archivo
-según `Hyn\Tenancy\Contracts\CurrentHostname`). Antes de escribir código: confirmar si algún
-cliente usa hoy personalización de vistas/rutas por tenant (carpetas `tenancy/<uuid>/`), porque
-stancl no tiene un equivalente directo de esa función de Hyn.
 
 ### Fase 3 — Laravel 10 → 11 → 12 → 13
 10→11: colapsar `app/Http/Kernel.php` y `app/Exceptions/Handler.php` en `bootstrap/app.php`;
