@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\System\Configuration;
 use Illuminate\Support\Facades\DB;
 use App\Models\System\Client;
-use Hyn\Tenancy\Environment;
+use App\Support\Tenancy\Environment;
 use Modules\Finance\Helpers\UploadFileHelper;
 
 
@@ -200,7 +200,7 @@ class ConfigurationController extends Controller
             foreach ($records as $row) {
 
                 $tenancy = app(Environment::class);
-                $tenancy->tenant($row->hostname->website);
+                $tenancy->tenant($row->tenant);
 
                 DB::connection('tenant')->table('configurations')->where('id', 1)->update(['apk_url' => $apk_url]);
 
@@ -226,7 +226,7 @@ class ConfigurationController extends Controller
             foreach ($records as $row) 
             {
                 $tenancy = app(Environment::class);
-                $tenancy->tenant($row->hostname->website);
+                $tenancy->tenant($row->tenant);
 
                 DB::connection('tenant')->table('configurations')->where('id', 1)->update(['global_discount_type_id' => '02']);
             }

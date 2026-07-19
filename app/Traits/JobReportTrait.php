@@ -4,8 +4,8 @@ namespace App\Traits;
 
 
 use Illuminate\Database\Eloquent\Builder;
-use Hyn\Tenancy\Models\Website;
-use Hyn\Tenancy\Environment;
+use App\Models\System\Tenant;
+use App\Support\Tenancy\Environment;
 use App\Models\Tenant\{
     User,
     DownloadTray,
@@ -20,10 +20,10 @@ trait JobReportTrait
     
                 
     /**
-     * 
-     * Obtener registro asociado al tenant desde la tabla website de system
-     * 
-     * @return Website
+     *
+     * Obtener el tenant actualmente activo
+     *
+     * @return Tenant
      */
     public function getTenantWebsite()
     {
@@ -32,14 +32,14 @@ trait JobReportTrait
 
 
     /**
-     * 
-     * Buscar website
-     * 
-     * @return Website
+     *
+     * Buscar tenant por id
+     *
+     * @return Tenant
      */
-    public function findWebsite($website_id)
+    public function findTenant($tenant_id)
     {
-        return Website::find($website_id);
+        return Tenant::find($tenant_id);
     }
 
         

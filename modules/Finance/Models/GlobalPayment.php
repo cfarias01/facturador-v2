@@ -15,7 +15,7 @@
     use Carbon\Carbon;
     use Eloquent;
     use Exception;
-    use Hyn\Tenancy\Traits\UsesTenantConnection;
+    use App\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
     use Illuminate\Database\Eloquent\Model;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;

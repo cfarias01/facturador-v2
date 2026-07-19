@@ -4,7 +4,7 @@ namespace App\Models\Tenant;
 
 use App\Notifications\Tenant\PasswordResetNotification;
 use Carbon\Carbon;
-use Hyn\Tenancy\Traits\UsesTenantConnection;
+use App\Traits\UsesTenantConnection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;

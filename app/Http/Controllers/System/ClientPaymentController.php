@@ -9,7 +9,7 @@ use App\Models\System\Client;
 use App\Models\System\ClientPayment;
 use App\Models\System\PaymentMethodType;
 use App\Models\System\CardBrand;
-use Hyn\Tenancy\Environment;
+use App\Support\Tenancy\Environment;
 use Illuminate\Support\Facades\DB;
 
 
@@ -58,7 +58,7 @@ class ClientPaymentController extends Controller
 
         $client = Client::findOrFail($request->client_id);
         $tenancy = app(Environment::class);
-        $tenancy->tenant($client->hostname->website);
+        $tenancy->tenant($client->tenant);
 
         DB::connection('tenant')->table('account_payments')->insert(
 
@@ -91,7 +91,7 @@ class ClientPaymentController extends Controller
 
         $client = Client::findOrFail($client_payment->client_id);
         $tenancy = app(Environment::class);
-        $tenancy->tenant($client->hostname->website);
+        $tenancy->tenant($client->tenant);
         DB::connection('tenant')->table('account_payments')->where('reference_id', $client_payment->id)->update(['state' => 1, 'date_of_payment_real' => date('Y-m-d')]);
 
         return [

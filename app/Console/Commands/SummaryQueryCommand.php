@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use GuzzleHttp\Client as ClientGuzzleHttp;
 use Illuminate\Console\Command;
-use Hyn\Tenancy\Models\Website;
+use App\Support\Tenancy\Environment;
 use App\Models\Tenant\{
     Configuration,
     Summary,
@@ -49,11 +49,7 @@ class SummaryQueryCommand extends Command
         Auth::login(User::firstOrFail());
 
         if (Configuration::firstOrFail()->cron) {
-            $hostname = Website::query()
-                ->where('uuid', app(\Hyn\Tenancy\Environment::class)->tenant()->uuid)
-                ->first()
-                ->hostnames
-                ->first();
+            $hostname = app(Environment::class)->tenant()->hostnames->first();
 
             $summaries = Summary::query()
                 ->where([

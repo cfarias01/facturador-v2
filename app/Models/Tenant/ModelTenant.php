@@ -3,7 +3,7 @@
 namespace App\Models\Tenant;
 
 use App\Models\Tenant\Warehouse as TenantWarehouse;
-use Hyn\Tenancy\Traits\UsesTenantConnection;
+use App\Traits\UsesTenantConnection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 

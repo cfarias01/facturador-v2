@@ -2,7 +2,7 @@
 
 namespace App\Models\Tenant\Catalogs;
 
-use Hyn\Tenancy\Traits\UsesTenantConnection;
+use App\Traits\UsesTenantConnection;
 use Illuminate\Database\Eloquent\Builder;
 
 class UnitType extends ModelCatalog

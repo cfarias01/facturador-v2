@@ -148,7 +148,7 @@ class MovementController extends Controller
 
         $company = Company::active();
         $client = Client::where('number', $company->number)->first();
-        $website_id = $client->hostname->website_id;
+        $tenant_id = $client->tenant_id;
 
        // $records = $this->getRecords($request->all(), GlobalPayment::class);
         //$records->orderBy('id');
@@ -164,8 +164,8 @@ class MovementController extends Controller
 
         $params = (object)array_merge($request->all(), ['user_id' => auth()->user()->id, 'type' => auth()->user()->type, 'establishment_id' => auth()->user()->establishment_id]);
 
-        ProcessMovementsReport::dispatch($params, $tray->id, $website_id);
-        // ProcessMovementsReport::dispatch($params, $tray->id, $website_id)->onQueue('process_movements_report');
+        ProcessMovementsReport::dispatch($params, $tray->id, $tenant_id);
+        // ProcessMovementsReport::dispatch($params, $tray->id, $tenant_id)->onQueue('process_movements_report');
 
         return [
             'success' => true,

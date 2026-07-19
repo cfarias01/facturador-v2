@@ -1,10 +1,9 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
-$hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
-
-if ($hostname) {
-    Route::domain($hostname->fqdn)->group(function () {
+Route::middleware([InitializeTenancyByDomain::class, PreventAccessFromCentralDomains::class])->group(function () {
 
         Route::middleware(['auth:api', 'locked.tenant'])->group(function () {
             
@@ -13,5 +12,4 @@ if ($hostname) {
         });
 
     });
-}
 

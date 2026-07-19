@@ -2,15 +2,17 @@
 
     namespace App\Models\System;
 
-    use Hyn\Tenancy\Abstracts\SystemModel;
+    use App\Traits\UsesSystemConnection;
+    use Illuminate\Database\Eloquent\Model;
 
     /**
      * Class ModuleLevel
      *
      * @package App\Models\System
-     * @mixin SystemModel
      */
-    class ModuleLevel extends SystemModel {
+    class ModuleLevel extends Model {
+
+        use UsesSystemConnection;
 
         protected $table = 'module_levels';
 

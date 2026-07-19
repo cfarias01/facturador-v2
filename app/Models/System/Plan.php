@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models\System;
-use Hyn\Tenancy\Traits\UsesSystemConnection;
+use App\Traits\UsesSystemConnection;
 
 use Illuminate\Database\Eloquent\Model;
 

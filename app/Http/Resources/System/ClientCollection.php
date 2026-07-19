@@ -26,7 +26,7 @@ class ClientCollection extends ResourceCollection
                 ->count();
             return [
                 'id' => $row->id,
-                'hostname' => $row->hostname->fqdn,
+                'hostname' => optional($row->tenant->domains->first())->fqdn,
                 'name' => $row->name,
                 'email' => $row->email,
                 'token' => $row->token,

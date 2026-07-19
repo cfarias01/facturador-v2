@@ -3,7 +3,7 @@
 namespace App\Models\System;
 
 use Illuminate\Database\Eloquent\Model;
-use Hyn\Tenancy\Traits\UsesSystemConnection;
+use App\Traits\UsesSystemConnection;
 
 class HistoryResource extends Model
 {

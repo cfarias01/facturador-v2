@@ -32,7 +32,7 @@
 
             return [
                 'id' => $this->id,
-                'hostname' => $this->hostname->fqdn,
+                'hostname' => optional($this->tenant->domains->first())->fqdn,
                 'name' => $this->name,
                 'email' => $this->email,
                 'token' => $this->token,

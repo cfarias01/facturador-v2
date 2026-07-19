@@ -1,11 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
-$hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
-
-if ($hostname) {
-    Route::domain($hostname->fqdn)->group(function () {
+Route::middleware([InitializeTenancyByDomain::class, PreventAccessFromCentralDomains::class])->group(function () {
         Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function() {
 
             /**
@@ -47,27 +46,22 @@ if ($hostname) {
 
         });
     });
-}
-else {
 
-    $prefix = env('PREFIX_URL',null);
-    $prefix = !empty($prefix)?$prefix.".":'';
-    $app_url = $prefix. env('APP_URL_BASE');
+$prefix = env('PREFIX_URL', null);
+$prefix = !empty($prefix) ? $prefix . "." : '';
+$app_url = $prefix . rtrim((string) env('APP_URL_BASE'), '/');
 
-    Route::domain($app_url)->group(function () {
+Route::domain($app_url)->group(function () {
 
-        Route::middleware('auth:admin')->group(function() {
+    Route::middleware('auth:admin')->group(function () {
 
-            Route::prefix('accounting')->group(function () {
+        Route::prefix('accounting')->group(function () {
 
-                Route::get('', 'System\AccountingController@index')->name('system.accounting.index');
-                Route::get('records', 'System\AccountingController@records');
-                Route::get('download', 'System\AccountingController@download');
-
-            });
+            Route::get('', 'System\AccountingController@index')->name('system.accounting.index');
+            Route::get('records', 'System\AccountingController@records');
+            Route::get('download', 'System\AccountingController@download');
 
         });
+
     });
-
-}
-
+});

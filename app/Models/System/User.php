@@ -2,7 +2,7 @@
 
 namespace App\Models\System;
 
-use Hyn\Tenancy\Traits\UsesSystemConnection;
+use App\Traits\UsesSystemConnection;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\Authorizable;

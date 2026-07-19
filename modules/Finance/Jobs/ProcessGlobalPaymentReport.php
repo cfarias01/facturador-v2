@@ -7,11 +7,10 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Hyn\Tenancy\Models\Website;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Exception;
-use Hyn\Tenancy\Environment;
+use App\Support\Tenancy\Environment;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Establishment;
@@ -30,18 +29,18 @@ class ProcessGlobalPaymentReport implements ShouldQueue
 
     public $params;
     public $tray_id;
-    public $website_id;
+    public $tenant_id;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(array $params, int $tray_id, int $website_id) 
+    public function __construct(array $params, int $tray_id, string $tenant_id)
     {
         $this->params = $params;
         $this->tray_id = $tray_id;
-        $this->website_id = $website_id;
+        $this->tenant_id = $tenant_id;
 
         // Log::info("tray_id => " . $this->tray_id);
         // Log::info("website_id => " . $this->website_id);
@@ -57,11 +56,11 @@ class ProcessGlobalPaymentReport implements ShouldQueue
      */
     public function handle()
     {
-        $this->showLogInfo("ProcessGlobalPaymentReport Start WebsiteId => {$this->website_id}");
+        $this->showLogInfo("ProcessGlobalPaymentReport Start TenantId => {$this->tenant_id}");
 
-        $website = $this->findWebsite($this->website_id);
+        $tenant = $this->findTenant($this->tenant_id);
         $tenancy = app(Environment::class);
-        $tenancy->tenant($website);
+        $tenancy->tenant($tenant);
         $path = null;
 
 

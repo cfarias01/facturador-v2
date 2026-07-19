@@ -4,7 +4,7 @@ namespace App\Http\Controllers\System\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\System\Client;
-use Hyn\Tenancy\Environment;
+use App\Support\Tenancy\Environment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -38,7 +38,7 @@ class ClientDocuments extends Controller
 
         foreach ($records as $row) {
             $tenancy = app(Environment::class);
-            $tenancy->tenant($row->hostname->website);
+            $tenancy->tenant($row->tenant);
 
             // Obtener todos los documentos del tenant donde ruc = $cedula
             $documentos = DB::connection('tenant')
@@ -47,7 +47,8 @@ class ClientDocuments extends Controller
                 ->get();
 
             // Obtener la URL base del tenant
-            $tenantBaseUrl = $row->hostname->fqdn ? 'http://' . $row->hostname->fqdn : url('/');
+            $domain = optional($row->tenant->domains->first())->fqdn;
+            $tenantBaseUrl = $domain ? 'http://' . $domain : url('/');
 
             foreach ($documentos as $documento) {
                 $count_documents[] = [

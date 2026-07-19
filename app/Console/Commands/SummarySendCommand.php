@@ -3,9 +3,8 @@
     namespace App\Console\Commands;
 
     use GuzzleHttp\Client as ClientGuzzleHttp;
-    use Hyn\Tenancy\Environment;
+    use App\Support\Tenancy\Environment;
     use Illuminate\Console\Command;
-    use Hyn\Tenancy\Models\Website;
     use App\Models\Tenant\{
         Configuration,
         Document,
@@ -55,11 +54,7 @@
             Auth::login(User::firstOrFail());
 
             if (Configuration::firstOrFail()->cron) {
-                $hostname = Website::query()
-                    ->where('uuid', app(Environment::class)->tenant()->uuid)
-                    ->first()
-                    ->hostnames
-                    ->first();
+                $hostname = app(Environment::class)->tenant()->hostnames->first();
 
                 $documents = Document::query()
                     ->select('date_of_issue')

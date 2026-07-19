@@ -9,8 +9,7 @@ use Exception;
 use App\Traits\BackupTrait;
 use Illuminate\Http\Request;
 use App\Models\System\Client;
-use Hyn\Tenancy\Models\Website;
-use Hyn\Tenancy\Models\Hostname;
+use App\Models\System\Tenant;
 use App\Http\Controllers\Controller;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Storage;
@@ -32,8 +31,8 @@ class BackupController extends Controller
 
         $most_recent = $this->mostRecent();
 
-        $clients = Client::without(['hostname','plan'])
-            ->select('hostname_id', 'name')
+        $clients = Client::without(['tenant','plan'])
+            ->select('tenant_id', 'name')
             ->get();
 
         return view('system.backup.index')->with('disc_used', $disc_used)->with('storage_size', $storage_size)->with('last_zip', $most_recent)->with('clients', $clients);
@@ -43,15 +42,14 @@ class BackupController extends Controller
     {
         $request->validate([
             'type' => 'required|in:individual,todos',
-            'hostname_id' => 'nullable|required_if:type,individual',
+            'tenant_id' => 'nullable|required_if:type,individual',
         ]);
 
         $database = '';
         if ($request->type === 'individual') {
 
-            $hostname = Hostname::findOrFail($request->hostname_id);
-            $website = Website::findOrFail($hostname->website_id);
-            $database = $website->uuid;
+            $tenant = Tenant::findOrFail($request->tenant_id);
+            $database = $tenant->database()->getName();
         }
 
         $output = Artisan::call('bk:bd', [
@@ -66,14 +64,13 @@ class BackupController extends Controller
     {
         $request->validate([
             'type' => 'required|in:individual,todos',
-            'hostname_id' => 'nullable|required_if:type,individual',
+            'tenant_id' => 'nullable|required_if:type,individual',
         ]);
 
         $folder = '';
         if ($request->type === 'individual') {
-            $hostname = Hostname::findOrFail($request->hostname_id);
-            $website = Website::findOrFail($hostname->website_id);
-            $folder = $website->uuid;
+            $tenant = Tenant::findOrFail($request->tenant_id);
+            $folder = $tenant->database()->getName();
         }
         $output = Artisan::call('bk:files', [
             'type' => $request->type,

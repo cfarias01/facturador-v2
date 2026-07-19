@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-$hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
-if ($hostname) {
-    Route::domain($hostname->fqdn)->group(function () {
+Route::middleware([InitializeTenancyByDomain::class, PreventAccessFromCentralDomains::class])->group(function () {
         Route::middleware(['auth', 'locked.tenant'])->group(function() {
 
             Route::prefix('bussiness_turns')->group(function () {
@@ -26,4 +26,3 @@ if ($hostname) {
 
         });
     });
-}

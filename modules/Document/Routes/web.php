@@ -1,10 +1,9 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
-$hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
-
-if ($hostname) {
-    Route::domain($hostname->fqdn)->group(function () {
+Route::middleware([InitializeTenancyByDomain::class, PreventAccessFromCentralDomains::class])->group(function () {
         Route::middleware(['auth', 'locked.tenant'])->group(function () {
 
             Route::prefix('documents/not-sent')->group(function() {
@@ -62,9 +61,12 @@ if ($hostname) {
 
                 // apiperu
                 // rutas de consulta de validacion desde listado de comprobantes
-                Route::get('validate_masivo','ValidateApiDocumentController@validate_masivo');
-                Route::get('validateDocumentstxt', 'ValidateApiDocumentController@validateDocumentsTxt');
-                Route::get('validatecount', 'ValidateApiDocumentController@countdocumennt');
+                // NOTA: comentadas porque ValidateApiDocumentController no existe en el
+                // codebase (bug preexistente, no introducido por la migracion; encontrado
+                // porque bloqueaba "artisan route:list" con un ReflectionException).
+                // Route::get('validate_masivo','ValidateApiDocumentController@validate_masivo');
+                // Route::get('validateDocumentstxt', 'ValidateApiDocumentController@validateDocumentsTxt');
+                // Route::get('validatecount', 'ValidateApiDocumentController@countdocumennt');
 
             });
 
@@ -76,4 +78,3 @@ if ($hostname) {
             });
         });
     });
-}

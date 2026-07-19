@@ -1,10 +1,9 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
-$current_hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
-
-if($current_hostname) {
-    Route::domain($current_hostname->fqdn)->group(function () {
+Route::middleware([InitializeTenancyByDomain::class, PreventAccessFromCentralDomains::class])->group(function () {
         Route::middleware(['auth', 'locked.tenant'])->group(function () {
 
             Route::redirect('/', '/dashboard');
@@ -28,4 +27,3 @@ if($current_hostname) {
 
         });
     });
-}
