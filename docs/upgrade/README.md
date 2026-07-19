@@ -30,8 +30,30 @@ cualquier persona o sesión futura retome el trabajo sin perder contexto. Rama d
         respectivamente) — **no se tocan**.
   - [x] Ruta `logs` (`rap2hpoutre/laravel-log-viewer`) verificada: ya está protegida por
         `auth:admin` en `routes/web.php:728`. No requirió corrección.
-- [ ] **Fase 1 — Salto Laravel 9 → 10** (mantiene `hyn/multi-tenant` si es posible)
-- [ ] **Fase 2 — Reemplazo de `hyn/multi-tenant` por `stancl/tenancy`** (mayor riesgo)
+- [x] **Fase 1 — Salto Laravel 9 → 10**
+  - [x] `laravel/framework` ^10.0, `laravel/ui` ^4.0, `barryvdh/laravel-dompdf` ^2.0.
+  - [x] `hyn/multi-tenant` **sigue funcionando sin cambios** en Laravel 10 (declara soporte
+        `^9.0|^10.0` — no fue necesario combinar esta fase con la Fase 2).
+  - [x] Se adelantaron 2 items de la Fase 4 porque bloqueaban el salto: se quitó
+        `binarytorch/larecipe`+`graham-campbell/markdown` (no soportan L10; el único uso real
+        era el link "Wiki" del módulo Digemid, que queda roto hasta reemplazar esa fuente de
+        docs, y el changelog de `UpdateController` que ahora usa `league/commonmark` directo)
+        y `fruitcake/laravel-cors` (redundante desde Laravel 9; `Kernel.php` usa ahora
+        `Illuminate\Http\Middleware\HandleCors` nativo con el mismo `config/cors.php`).
+  - [x] `database/seeds` → `database/seeders` (convención Laravel 8+).
+  - [x] Verificado: boot OK (Laravel 10.50.2), `route:list` resuelve 99 rutas sin errores.
+        **Pendiente**: correr el checklist completo de `qa-checklist.md` contra una BD de
+        prueba con tenants reales — no se hizo por no tener ese entorno disponible en esta
+        sesión.
+- [ ] **Fase 2 — Reemplazo de `hyn/multi-tenant` por `stancl/tenancy`** (mayor riesgo, **ahora
+      obligatoria antes de seguir**)
+  - Confirmado empíricamente (`composer require laravel/framework:^11.0 --dry-run`):
+    `hyn/multi-tenant` 5.9.1 declara `require laravel/framework ^9.0|^10.0` y bloquea duro en
+    Laravel 11. Ya no se puede posponer esta fase — es el próximo paso obligatorio.
+  - Confirmado empíricamente (Fase 0): no existe ninguna carpeta `tenancy/<uuid>/` en
+    `storage/` ni en el repo, y `config/tenancy.php` tiene `'disk' => null` — nadie usa hoy la
+    personalización de vistas/rutas/traducciones por tenant de Hyn. Se puede descartar esa
+    función sin reemplazo.
 - [ ] **Fase 3 — Saltos Laravel 10 → 11 → 12 → 13**
 - [ ] **Fase 4 — Limpieza final de dependencias y hardening**
 
