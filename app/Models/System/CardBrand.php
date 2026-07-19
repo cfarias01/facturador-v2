@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class CardBrand extends Model
 {
+    use UsesSystemConnection;
+
     public $timestamps = false;
 
     protected $fillable = [

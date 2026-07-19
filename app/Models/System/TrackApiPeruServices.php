@@ -3,7 +3,7 @@
     namespace App\Models\System;
 
     use Carbon\Carbon;
-    use App\Traits\UsesTenantConnection;
+    use App\Traits\UsesSystemConnection;
     use Illuminate\Database\Eloquent\Model;
 
     /**
@@ -18,6 +18,7 @@
      */
     class TrackApiPeruServices extends Model
     {
+        use UsesSystemConnection;
 
         public $timestamps = false;
         protected $perPage = 25;

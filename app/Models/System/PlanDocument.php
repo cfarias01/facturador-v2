@@ -2,10 +2,12 @@
 
 namespace App\Models\System;
 
-use Illuminate\Database\Eloquent\Model; 
+use App\Traits\UsesSystemConnection;
+use Illuminate\Database\Eloquent\Model;
 
 class PlanDocument extends Model
-{ 
+{
+    use UsesSystemConnection;
 
     protected $table = "plan_documents";
     

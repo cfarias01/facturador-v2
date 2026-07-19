@@ -7,6 +7,7 @@ use App\Traits\UsesSystemConnection;
 
 class RestaurantPartner extends Model
 {
+    use UsesSystemConnection;
 
     protected $table = "restaurant_partners";
 

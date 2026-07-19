@@ -11,13 +11,10 @@ use App\Models\System\Client;
 use App\Models\System\Configuration;
 use App\Models\System\Module;
 use App\Models\System\Plan;
+use App\Models\System\Tenant;
 use Carbon\Carbon;
 use Exception;
-use Hyn\Tenancy\Contracts\Repositories\HostnameRepository;
-use Hyn\Tenancy\Contracts\Repositories\WebsiteRepository;
-use Hyn\Tenancy\Environment;
-use Hyn\Tenancy\Models\Hostname;
-use Hyn\Tenancy\Models\Website;
+use App\Support\Tenancy\Environment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -170,7 +167,7 @@ class ClientController extends Controller
             ->get();
         foreach ($records as &$row) {
             $tenancy = app(Environment::class);
-            $tenancy->tenant($row->hostname->website);
+            $tenancy->tenant($row->tenant);
             // $row->count_doc = DB::connection('tenant')-> table('documents') ->count();
             /*$row->count_doc = DB::connection('tenant')
                     ->table('configurations')
@@ -245,7 +242,7 @@ class ClientController extends Controller
     {
         $client = Client::findOrFail($id);
         $tenancy = app(Environment::class);
-        $tenancy->tenant($client->hostname->website);
+        $tenancy->tenant($client->tenant);
         $user_id = 1;
         // Se buscan los valores en las tablas de los clientes, luego se compara con las tablas de admin para mostrar
         // correctamente la seleccion en la seccion de modulos de permisos
@@ -341,7 +338,7 @@ class ClientController extends Controller
         $count_documents = [];
         foreach ($records as $row) {
             $tenancy = app(Environment::class);
-            $tenancy->tenant($row->hostname->website);
+            $tenancy->tenant($row->tenant);
             for ($i = 1; $i <= 12; $i++) {
                 $date_initial = Carbon::createFromDate(date('Y'), $i, 1)->startOfMonth()->format('Y-m-d');
                 $date_final = Carbon::createFromDate(date('Y'), $i, 1)->endOfMonth()->format('Y-m-d');
@@ -440,7 +437,7 @@ class ClientController extends Controller
             $plan = Plan::find($request->plan_id);
 
             $tenancy = app(Environment::class);
-            $tenancy->tenant($client->hostname->website);
+            $tenancy->tenant($client->tenant);
             $clientData = [
                 'plan' => json_encode($plan),
                 'config_system_env' => $request->config_system_env,
@@ -602,27 +599,27 @@ class ClientController extends Controller
 
 
         $subDom = strtolower($request->input('subdomain'));
-        $uuid = config('tenant.prefix_database') . '_' . $subDom;
         $fqdn = $subDom . '.' . config('tenant.app_url_base');
 
-        $website = new Website();
-        $hostname = new Hostname();
-        
-        $this->validateWebsite($uuid, $website);
+        $this->validateSubdomain($subDom);
+
+        $tenant = null;
 
         try {
 
             //DB::connection('system')->beginTransaction();
 
-            $website->uuid = $uuid;
-            app(WebsiteRepository::class)->create($website);
-            $hostname->fqdn = $fqdn;
-            app(HostnameRepository::class)->attach($hostname, $website);
+            // Tenant::create() dispara TenantCreated, que via
+            // App\Providers\TenancyServiceProvider crea y migra la BD del
+            // tenant de forma sincrona (equivalente al
+            // auto-create-tenant-database + auto-migrate de hyn/multi-tenant).
+            $tenant = Tenant::create(['id' => $subDom]);
+            $tenant->domains()->create(['domain' => $fqdn]);
 
             $token = Str::random(50);
 
             $client = new Client();
-            $client->hostname_id = $hostname->id;
+            $client->tenant_id = $tenant->id;
             $client->token = $token;
             $client->email = strtolower($request->input('email'));
             $client->name = $request->input('name');
@@ -634,18 +631,23 @@ class ClientController extends Controller
             //DB::connection('system')->commit();
 
             $tenancy = app(Environment::class);
-            $tenancy->tenant($website);
+            $tenancy->tenant($tenant);
 
         } catch (Exception $e) {
 
             Log::error('Error creating tenant: ' . $e->getMessage());
-            
+
             if (DB::connection('system')->transactionLevel() > 0) {
                 DB::connection('system')->rollBack();
             }
 
-            app(HostnameRepository::class)->delete($hostname, true);
-            app(WebsiteRepository::class)->delete($website, true);
+            if ($tenant) {
+                // Borrado forzado de la BD recien creada, sin importar
+                // TENANCY_DATABASE_AUTO_DELETE: es un rollback de un
+                // provisioning fallido, no un borrado de tenant real.
+                $tenant->database()->manager()->deleteDatabase($tenant);
+                $tenant->delete();
+            }
 
             return [
                 'success' => false,
@@ -812,10 +814,10 @@ class ClientController extends Controller
         ];
     }
 
-    public function validateWebsite($uuid, $website)
+    public function validateSubdomain($subDom)
     {
 
-        $exists = $website::where('uuid', $uuid)->first();
+        $exists = Tenant::find($subDom);
 
         if ($exists) {
             throw new Exception("El subdominio ya se encuentra registrado");
@@ -829,7 +831,7 @@ class ClientController extends Controller
         // dd($request->all());
         $client = Client::findOrFail($request->id);
         $tenancy = app(Environment::class);
-        $tenancy->tenant($client->hostname->website);
+        $tenancy->tenant($client->tenant);
 
         DB::connection('tenant')->table('billing_cycles')->insert([
             'date_time_start' => date('Y-m-d H:i:s'),
@@ -858,7 +860,7 @@ class ClientController extends Controller
         $client->save();
 
         $tenancy = app(Environment::class);
-        $tenancy->tenant($client->hostname->website);
+        $tenancy->tenant($client->tenant);
         DB::connection('tenant')->table('configurations')->where('id', 1)->update(['locked_users' => $client->locked_users]);
 
         return [
@@ -876,7 +878,7 @@ class ClientController extends Controller
         $client->save();
 
         $tenancy = app(Environment::class);
-        $tenancy->tenant($client->hostname->website);
+        $tenancy->tenant($client->tenant);
         DB::connection('tenant')->table('configurations')->where('id', 1)->update(['locked_emission' => $client->locked_emission]);
 
         return [
@@ -894,7 +896,7 @@ class ClientController extends Controller
         $client->save();
 
         $tenancy = app(Environment::class);
-        $tenancy->tenant($client->hostname->website);
+        $tenancy->tenant($client->tenant);
         DB::connection('tenant')->table('configurations')->where('id', 1)->update(['locked_tenant' => $client->locked_tenant]);
 
         return [
@@ -946,11 +948,19 @@ class ClientController extends Controller
             ];
         }
 
-        $hostname = Hostname::find($client->hostname_id);
-        $website = Website::find($hostname->website_id);
+        $tenant = $client->tenant;
 
-        app(HostnameRepository::class)->delete($hostname, true);
-        app(WebsiteRepository::class)->delete($website, true);
+        // Igual que con hyn/multi-tenant: el borrado fisico de la BD del
+        // tenant queda condicionado a TENANCY_DATABASE_AUTO_DELETE. El
+        // registro Tenant siempre se borra (cascada a domains via FK; el
+        // client.tenant_id queda en null via FK, el registro Client no se
+        // elimina -- mismo comportamiento que el codigo anterior).
+        if ($tenant) {
+            if (env('TENANCY_DATABASE_AUTO_DELETE', false)) {
+                $tenant->database()->manager()->deleteDatabase($tenant);
+            }
+            $tenant->delete();
+        }
 
         return [
             'success' => true,
@@ -961,9 +971,8 @@ class ClientController extends Controller
     public function password($id)
     {
         $client = Client::find($id);
-        $website = Website::find($client->hostname->website_id);
         $tenancy = app(Environment::class);
-        $tenancy->tenant($website);
+        $tenancy->tenant($client->tenant);
         DB::connection('tenant')->table('users')
             ->where('id', 1)
             ->update(['password' => bcrypt($client->number)]);

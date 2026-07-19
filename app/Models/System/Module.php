@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Module extends Model
 {
+    use UsesSystemConnection;
 
     protected $fillable = [
         'value',

@@ -7,6 +7,7 @@ use App\Traits\UsesSystemConnection;
 
 class HistoryResource extends Model
 {
+    use UsesSystemConnection;
 
 
     protected $fillable = [

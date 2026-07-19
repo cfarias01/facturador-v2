@@ -58,6 +58,7 @@ use Illuminate\Support\Facades\Config;
  */
 class Client extends Model
 {
+    use UsesSystemConnection;
 
     protected $with = ['tenant','plan'];
     protected $fillable = [

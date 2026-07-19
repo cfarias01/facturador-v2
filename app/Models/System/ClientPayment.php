@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ClientPayment extends Model
 {
+    use UsesSystemConnection;
+
     protected $with = ['payment_method_type', 'card_brand'];
 
     protected $fillable = [

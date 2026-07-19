@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PaymentMethodType extends Model
 {
+    use UsesSystemConnection;
 
     public $timestamps = false;
 
