@@ -5,6 +5,7 @@
     use Closure;
     use Illuminate\Http\RedirectResponse;
     use Illuminate\Http\Request;
+    use Illuminate\Support\Facades\Route;
     use Modules\LevelAccess\Traits\SystemActivityTrait;
 
     /**
@@ -206,52 +207,33 @@
             // registrar log de actividades cuando el usuario no tiene permiso al modulo
             $this->saveGeneralSystemActivity(auth()->user(), 'module_access_error', $this->route_path);
 
-            switch ($module) {
+            $routes = [
+                'pos' => 'tenant.pos.index',
+                'documents' => 'tenant.documents.create',
+                'purchases' => 'tenant.documents_received.index',
+                'advanced' => 'tenant.retentions.index',
+                'reports' => 'tenant.reports.purchases.index',
+                'configuration' => 'tenant.companies.create',
+                'inventory' => 'warehouses.index',
+                'accounting' => 'tenant.account.index',
+                'finance' => 'tenant.finances.global_payments.index',
+                'establishments' => 'tenant.users.index',
+                'documentary-procedure' => 'tenant.hotels.index',
+                'hotels' => 'tenant.hotels.index',
+                'digemid' => 'tenant.digemid.index',
+                'suscription_app' => 'tenant.suscription.client.index',
+            ];
 
-                case 'pos':
-                    return redirect()->route('tenant.pos.index');
+            // Algunos de estos destinos ya no existen (controladores retirados en
+            // limpiezas anteriores); si el destino esperado no esta definido, cae
+            // al dashboard en vez de lanzar RouteNotFoundException.
+            $route = $routes[$module] ?? null;
 
-                case 'documents':
-                    return redirect()->route('tenant.documents.create');
-
-                case 'purchases':
-                    return redirect()->route('tenant.purchases.index');
-
-                case 'advanced':
-                    return redirect()->route('tenant.retentions.index');
-
-                case 'reports':
-                    return redirect()->route('tenant.reports.purchases.index');
-
-                case 'configuration':
-                    return redirect()->route('tenant.companies.create');
-
-                case 'inventory':
-                    return redirect()->route('warehouses.index');
-
-                case 'accounting':
-                    return redirect()->route('tenant.account.index');
-
-                case 'finance':
-                    return redirect()->route('tenant.finances.global_payments.index');
-
-                case 'establishments':
-                    return redirect()->route('tenant.users.index');
-
-                case 'documentary-procedure':
-                case 'hotels':
-                    return redirect()->route('tenant.hotels.index');
-                case 'digemid':
-                    return redirect()->route('tenant.digemid.index');
-                case 'suscription_app':
-                    return redirect()->route('tenant.suscription.client.index');
-
-                default;
-                    return redirect()->route('tenant.dashboard.index');
-                /*case 'ecommerce':
-                    return redirect()->route('tenant.ecommerce.index');*/
-
+            if ($route && Route::has($route)) {
+                return redirect()->route($route);
             }
+
+            return redirect()->route('tenant.dashboard.index');
         }
 
     }

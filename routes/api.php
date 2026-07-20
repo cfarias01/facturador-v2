@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::domain(rtrim((string) env('APP_URL_BASE'), '/'))->group(function () {
+Route::domain(config('tenant.app_url_base'))->group(function () {
 
     Route::middleware(['auth:system_api'])->group(function () {
         //reseller

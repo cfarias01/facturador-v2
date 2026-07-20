@@ -1151,8 +1151,8 @@ class DocumentController extends Controller
         $data_json['hash'] = $document->hash;
         $data_json['qr'] = $document->qr;
         $data_json['query'] = $query;
-        $data_json['file_xml_signed'] = base64_encode($this->getStorage($document->filename, 'signed'));
-        $data_json['file_pdf'] = base64_encode($this->getStorage($document->filename, 'pdf'));
+        $data_json['file_xml_signed'] = base64_encode($this->getStorage($document->filename, 'signed', null, $document->date_of_issue));
+        $data_json['file_pdf'] = base64_encode($this->getStorage($document->filename, 'pdf', null, $document->date_of_issue));
         // dd($data_json);
         $res = $client->post('/api/documents_server', [
             'http_errors' => false,
@@ -1196,7 +1196,7 @@ class DocumentController extends Controller
             $document->save();
 
             if ($state_type_id === '05') {
-                $this->uploadStorage($document->filename, base64_decode($response['file_cdr']), 'cdr');
+                $this->uploadStorage($document->filename, base64_decode($response['file_cdr']), 'cdr', null, $document->date_of_issue);
             }
         }
 

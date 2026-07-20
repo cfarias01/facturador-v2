@@ -58,11 +58,13 @@
                         <a href="{{route('tenant.companies.create')}}">Empresa</a>
                     </li>
                      {{-- <li>
-                         <a href="{{route('tenant.bussiness_turns.index')}}">Giro de negocio</a> 
+                         <a href="{{route('tenant.bussiness_turns.index')}}">Giro de negocio</a>
                     </li>  --}}
+                    @if(Route::has('tenant.advanced.index'))
                     <li>
                         <a href="{{route('tenant.advanced.index')}}">Avanzado</a>
                     </li>
+                    @endif
                 </ul>
             </div>
         </div>
@@ -166,7 +168,7 @@
                             <a href="{{route('tenant.sale_notes.configuration')}}">Nota de ventas</a>
                         </li>
                     @endif
-                                @if($configuration->isMiTiendaPe()== true)
+                                @if($configuration->isMiTiendaPe()== true && Route::has('tenant.mi_tienda_pe.configuration.index'))
                                     <li>
                                         <a href="{{route('tenant.mi_tienda_pe.configuration.index')}}">
                                             MiTienda.PE

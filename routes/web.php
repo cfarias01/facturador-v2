@@ -13,15 +13,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-$prefix = env('PREFIX_URL', null);
+$prefix = config('tenant.prefix_url');
 $prefix = !empty($prefix) ? $prefix . "." : '';
-$app_url = $prefix . rtrim((string) env('APP_URL_BASE'), '/');
+$app_url = $prefix . config('tenant.app_url_base');
 
 Route::domain($app_url)->group(function () {
 
-    Route::get('login', 'System\LoginController@showLoginForm')->name('login');
+    Route::get('login', 'System\LoginController@showLoginForm')->name('system.login');
     Route::post('login', 'System\LoginController@login');
-    Route::post('logout', 'System\LoginController@logout')->name('logout');
+    Route::post('logout', 'System\LoginController@logout')->name('system.logout');
 
     Route::get('phone', 'System\UserController@getPhone');
 

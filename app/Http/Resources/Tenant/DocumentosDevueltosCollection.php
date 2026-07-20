@@ -7,9 +7,12 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use App\Models\Tenant\StateType;
 use App\Models\Tenant\Catalogs\DocumentType;
 use Illuminate\Support\Facades\Storage;
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 
 class DocumentosDevueltosCollection extends ResourceCollection
 {
+    use StorageDocument;
+
     /**
      * Transform the resource collection into an array.
      *
@@ -47,7 +50,7 @@ class DocumentosDevueltosCollection extends ResourceCollection
 
                 $has_pdf = true;
             }
-            if(Storage::disk('tenant')->exists('firmados/'.$row->claveAcceso.'.xml')){
+            if($this->existFileInStorage($row->claveAcceso, 'firmados', null, $this->claveAccesoIssueDate($row->claveAcceso))){
                 $has_xml = true;
             }
             $total_payment = $row->total;

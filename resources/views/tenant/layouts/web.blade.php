@@ -15,7 +15,7 @@
     {{--<link rel="dns-prefetch" href="https://fonts.gstatic.com">--}}
     {{--<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">--}}
 
-    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    @vite('resources/sass/style.scss')
 
     <!-- Styles -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
@@ -89,10 +89,12 @@
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/vendor/perfect-scrollbar.jquery.min.js') }}"></script>
+    <script src="{{ asset('js/vendor/sidebarmenu.js') }}"></script>
+    <script src="{{ asset('js/vendor/waves.js') }}"></script>
+    <script src="{{ asset('js/vendor/custom.js') }}"></script>
 
-    <script src="{{ asset('js/manifest.js') }}"></script>
-    <script src="{{ asset('js/vendor.js') }}"></script>
-    <script src="{{ mix('js/app.js') }}"></script>
+    @vite('resources/js/app.js')
     <!-- Theme Base, Components and Settings -->
     {{--<script src="{{asset('porto-light/js/theme.js')}}"></script>--}}
 </body>

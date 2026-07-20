@@ -47,9 +47,9 @@ Route::middleware([InitializeTenancyByDomain::class, PreventAccessFromCentralDom
         });
     });
 
-$prefix = env('PREFIX_URL', null);
+$prefix = config('tenant.prefix_url');
 $prefix = !empty($prefix) ? $prefix . "." : '';
-$app_url = $prefix . rtrim((string) env('APP_URL_BASE'), '/');
+$app_url = $prefix . config('tenant.app_url_base');
 
 Route::domain($app_url)->group(function () {
 

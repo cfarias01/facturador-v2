@@ -149,10 +149,6 @@
                                 </a>
                                 <ul class="nav nav-children">
                                     @if(in_array('purchases_list', $vc_module_levels))
-                                        <li class="{{ ($firstLevel === 'purchases' && $secondLevel !== 'received2' && $secondLevel !== 'received' && $secondLevel != 'create')?'nav-active':'' }}">
-                                            <a class="nav-link"
-                                               href="{{route('tenant.purchases.index')}}">Listado</a>
-                                        </li>
                                         <li class="{{ ($firstLevel === 'purchases' && $secondLevel !== 'received2' && $secondLevel === 'received')?'nav-active':'' }}">
                                             <a class="nav-link"
                                                href="{{route('tenant.documents_received.index')}}">Resumen Cargados</a>
@@ -197,7 +193,7 @@
                                            href="{{route('tenant.users.index')}}">Usuarios</a>
                                     </li>
                                 @endif
-                                @if(in_array('users_establishments', $vc_module_levels))
+                                @if(in_array('users_establishments', $vc_module_levels) && Route::has('tenant.establishments.index'))
                                     <li class="{{ ($firstLevel === 'establishments')?'nav-active':'' }}">
                                         <a class="nav-link"
                                            href="{{route('tenant.establishments.index')}}">Establecimientos</a>

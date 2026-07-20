@@ -1,6 +1,85 @@
 services:
-  facturador:
-    image: facturador
+  mysql:
+    image: mysql:8
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${DB_DATABASE:-facturadorsri}
+      MYSQL_USER: ${DB_USERNAME:-facturador}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-facturador}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
     build:
       context: .
       dockerfile: ./Dockerfile
+    image: facturador
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      APP_ROLE: web
+      DB_HOST: mysql
+      DB_DATABASE: ${DB_DATABASE:-facturadorsri}
+      DB_USERNAME: ${DB_USERNAME:-facturador}
+      DB_PASSWORD: ${DB_PASSWORD:-facturador}
+    ports:
+      - "${APP_PORT:-80}:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - storage_data:/var/www/html/storage
+
+  queue:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: facturador
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      APP_ROLE: queue
+      DB_HOST: mysql
+      DB_DATABASE: ${DB_DATABASE:-facturadorsri}
+      DB_USERNAME: ${DB_USERNAME:-facturador}
+      DB_PASSWORD: ${DB_PASSWORD:-facturador}
+    command: php artisan queue:work --tries=3 --sleep=3
+    depends_on:
+      mysql:
+        condition: service_healthy
+      app:
+        condition: service_started
+    volumes:
+      - storage_data:/var/www/html/storage
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: facturador
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      APP_ROLE: scheduler
+      DB_HOST: mysql
+      DB_DATABASE: ${DB_DATABASE:-facturadorsri}
+      DB_USERNAME: ${DB_USERNAME:-facturador}
+      DB_PASSWORD: ${DB_PASSWORD:-facturador}
+    command: sh -c "while true; do php artisan schedule:run; sleep 60; done"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      app:
+        condition: service_started
+    volumes:
+      - storage_data:/var/www/html/storage
+
+volumes:
+  mysql_data:
+  storage_data:

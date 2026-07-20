@@ -3,3 +3,8 @@
 *.scss linguist-vendored
 *.js linguist-vendored
 CHANGELOG.md export-ignore
+
+# Los scripts de shell corren dentro de contenedores Linux: si Git los
+# convierte a CRLF al hacer checkout en Windows (comun con core.autocrlf=true),
+# el "#!/bin/sh" deja de ser un shebang valido y el contenedor no arranca.
+*.sh text eol=lf

@@ -27,46 +27,56 @@
                 <div class="card-body">
                     <h6 class="card-title">General</h6>
                     <ul class="card-report-links">
-                        @if($vc_company->soap_type_id != '03')
+                        @if($vc_company->soap_type_id != '03' && Route::has('tenant.consistency-documents.index'))
                             <li>
                                 <a href="{{route('tenant.consistency-documents.index')}}">
                                     Consistencia documentos
                                 </a>
                             </li>
+                        @endif
+                        @if($vc_company->soap_type_id != '03' && Route::has('tenant.validate_documents.index'))
                             <li>
                                 <a href="{{route('tenant.validate_documents.index')}}">
                                     Validador de documentos
                                 </a>
                             </li>
                         @endif
-                        @if(in_array('hotel', $vc_business_turns))
+                        @if(in_array('hotel', $vc_business_turns) && Route::has('tenant.reports.document_hotels.index'))
                             <li>
                                 <a href="{{route('tenant.reports.document_hotels.index')}}">
                                     Giro negocio hoteles
                                 </a>
                             </li>
+                        @endif
+                        @if(in_array('hotel', $vc_business_turns) && Route::has('tenant.reports.report_hotel.index'))
                             <li>
                                 <a href="{{route('tenant.reports.report_hotel.index')}}">
                                     Reporte de Habitaciones
                                 </a>
                             </li>
                         @endif
-                        <li>
-                            <a href="{{route('tenant.reports.commercial_analysis.index')}}">
-                                Análisis comercial
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{route('tenant.reports.massive-downloads.index')}}">
-                                Descarga masiva - documentos
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{route('tenant.reports.download-tray.index')}}">
-                                Bandeja descarga de reportes
-                            </a>
-                        </li>
-                        
+                        @if(Route::has('tenant.reports.commercial_analysis.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.commercial_analysis.index')}}">
+                                    Análisis comercial
+                                </a>
+                            </li>
+                        @endif
+                        @if(Route::has('tenant.reports.massive-downloads.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.massive-downloads.index')}}">
+                                    Descarga masiva - documentos
+                                </a>
+                            </li>
+                        @endif
+                        @if(Route::has('tenant.reports.download-tray.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.download-tray.index')}}">
+                                    Bandeja descarga de reportes
+                                </a>
+                            </li>
+                        @endif
+
                         {{-- Actividades del sistema --}}
                         <li>
                             <a href="#" data-toggle="collapse" data-target="#system_activity_logs_id">
@@ -98,27 +108,34 @@
                 <div class="card-body">
                     <h6 class="card-title">Compras</h6>
                     <ul class="card-report-links">
-                        <li>
-                            <a href="{{route('tenant.reports.purchases.index')}}">
-                                Compras totales
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{route('tenant.reports.fixed-asset-purchases.index')}}">
-                                Activos fijos
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="{{route('tenant.reports.purchases.items.index')}}">
-                                Producto - busqueda individual
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{route('tenant.reports.purchases.general_items.index')}}">
-                                Productos
-                            </a>
-                        </li>
+                        @if(Route::has('tenant.reports.purchases.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.purchases.index')}}">
+                                    Compras totales
+                                </a>
+                            </li>
+                        @endif
+                        @if(Route::has('tenant.reports.fixed-asset-purchases.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.fixed-asset-purchases.index')}}">
+                                    Activos fijos
+                                </a>
+                            </li>
+                        @endif
+                        @if(Route::has('tenant.reports.purchases.items.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.purchases.items.index')}}">
+                                    Producto - busqueda individual
+                                </a>
+                            </li>
+                        @endif
+                        @if(Route::has('tenant.reports.purchases.general_items.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.purchases.general_items.index')}}">
+                                    Productos
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
             </div>
@@ -129,18 +146,22 @@
                 <div class="card-body">
                     <h6 class="card-title">Ventas</h6>
                     <ul class="card-report-links">
-                        @if($vc_company->soap_type_id != '03')
+                        @if($vc_company->soap_type_id != '03' && Route::has('tenant.reports.sales.index'))
                             <li>
                                 <a href="{{route('tenant.reports.sales.index')}}">Documentos</a>
                             </li>
                         @endif
-                        <li>
-                            <a href="{{route('tenant.reports.customers.index')}}">Clientes</a>
-                        </li>
-                        <li>
-                            <a href="{{route('tenant.reports.items.index')}}">Producto - busqueda individual</a>
-                        </li>
-                            @if($show_extra_info_to_item == true)
+                        @if(Route::has('tenant.reports.customers.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.customers.index')}}">Clientes</a>
+                            </li>
+                        @endif
+                        @if(Route::has('tenant.reports.items.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.items.index')}}">Producto - busqueda individual</a>
+                            </li>
+                        @endif
+                            @if($show_extra_info_to_item == true && Route::has('tenant.reports.extra.items.index'))
                                 <li>
                                     <a href="{{route('tenant.reports.extra.items.index')}}">
                                         Producto - busqueda individual - Por atributos
@@ -154,32 +175,41 @@
                                     </a>
                                 </li>
                             @endif
-                        <li>
-                            <a href="{{route('tenant.reports.general_items.index')}}">Productos</a>
-                        </li>
-                        <li>
-                            <a href="{{route('tenant.reports.quotations.index')}}">Cotizaciones</a>
-                        </li>
-                        <li>
-                            <a href="{{route('tenant.reports.sale_notes.index')}}">Notas de Venta</a>
-                        </li>
-                        @if($vc_company->soap_type_id != '03')
+                        @if(Route::has('tenant.reports.general_items.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.general_items.index')}}">Productos</a>
+                            </li>
+                        @endif
+                        @if(Route::has('tenant.reports.quotations.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.quotations.index')}}">Cotizaciones</a>
+                            </li>
+                        @endif
+                        @if(Route::has('tenant.reports.sale_notes.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.sale_notes.index')}}">Notas de Venta</a>
+                            </li>
+                        @endif
+                        @if($vc_company->soap_type_id != '03' && Route::has('tenant.reports.document_detractions.index'))
                             <li>
                                 <a href="{{route('tenant.reports.document_detractions.index')}}">Detracciones</a>
                             </li>
                         @endif
-                        <li>
-                            <a href="{{route('tenant.reports.sales_consolidated.index')}}">Consolidado de items</a>
-                        </li>
-                        
-                        <li>
-                            <a href="{{route('tenant.reports.tips.index')}}">Propinas</a>
-                        </li>
-
-                        <li>
-                            <a href="{{route('tenant.reports.state_account.index')}}">Estado de cuenta</a>
-                        </li>
-                        
+                        @if(Route::has('tenant.reports.sales_consolidated.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.sales_consolidated.index')}}">Consolidado de items</a>
+                            </li>
+                        @endif
+                        @if(Route::has('tenant.reports.tips.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.tips.index')}}">Propinas</a>
+                            </li>
+                        @endif
+                        @if(Route::has('tenant.reports.state_account.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.state_account.index')}}">Estado de cuenta</a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
             </div>
@@ -190,15 +220,21 @@
                 <div class="card-body">
                     <h6 class="card-title">Ventas/Comisiones</h6>
                     <ul class="card-report-links">
-                        <li>
-                            <a href="{{route('tenant.reports.user_commissions.index')}}">Utilidad ventas</a>
-                        </li>
-                        <li>
-                            <a href="{{route('tenant.reports.commissions.index')}}">Ventas</a>
-                        </li>
-                        <li>
-                            <a href="{{route('tenant.reports.commissions_detail.index')}}">Utilidad detallado</a>
-                        </li>
+                        @if(Route::has('tenant.reports.user_commissions.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.user_commissions.index')}}">Utilidad ventas</a>
+                            </li>
+                        @endif
+                        @if(Route::has('tenant.reports.commissions.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.commissions.index')}}">Ventas</a>
+                            </li>
+                        @endif
+                        @if(Route::has('tenant.reports.commissions_detail.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.commissions_detail.index')}}">Utilidad detallado</a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
             </div>
@@ -209,14 +245,18 @@
                 <div class="card-body">
                     <h6 class="card-title">Pedidos</h6>
                     <ul class="card-report-links">
-                        <li>
-                            <a href="{{route('tenant.reports.order_notes_general.index')}}">General</a>
-                        </li>
-                        <li>
-                            <a href="{{route('tenant.reports.order_notes_consolidated.index')}}">
-                                Consolidado de items
-                            </a>
-                        </li>
+                        @if(Route::has('tenant.reports.order_notes_general.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.order_notes_general.index')}}">General</a>
+                            </li>
+                        @endif
+                        @if(Route::has('tenant.reports.order_notes_consolidated.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.order_notes_consolidated.index')}}">
+                                    Consolidado de items
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
             </div>
@@ -227,11 +267,13 @@
                 <div class="card-body">
                     <h6 class="card-title">Guias</h6>
                     <ul class="card-report-links">
-                        <li>
-                            <a href="{{route('tenant.reports.guides.index')}}">
-                                Consolidado de items
-                            </a>
-                        </li>
+                        @if(Route::has('tenant.reports.guides.index'))
+                            <li>
+                                <a href="{{route('tenant.reports.guides.index')}}">
+                                    Consolidado de items
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
             </div>

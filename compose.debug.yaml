@@ -1,6 +1,0 @@
-services:
-  facturador:
-    image: facturador
-    build:
-      context: .
-      dockerfile: ./Dockerfile

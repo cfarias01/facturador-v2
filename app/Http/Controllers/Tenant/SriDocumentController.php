@@ -1441,7 +1441,7 @@ class SriDocumentController extends Controller
                         </factura>';
                     }
 
-                    $nombre = "generados/" . $clave_acceso . ".xml";
+                    $nombre = "generados/" . $this->claveAccesoDateFolder($clave_acceso) . $clave_acceso . ".xml";
                     Storage::disk('tenant')->put($nombre, $xml);
                     $this->XmlGenerado = $xml;
                     $this->clave_acceso = $clave_acceso;
@@ -1695,7 +1695,7 @@ class SriDocumentController extends Controller
                         $xml .= '</docsSustento>
                         </comprobanteRetencion>';
                     }
-                    $nombre = "generados/" . $clave_acceso . ".xml";
+                    $nombre = "generados/" . $this->claveAccesoDateFolder($clave_acceso) . $clave_acceso . ".xml";
                     Storage::disk('tenant')->put($nombre, $xml);
                     $this->XmlGenerado = $xml;
                     $this->clave_acceso = $clave_acceso;
@@ -1952,7 +1952,7 @@ class SriDocumentController extends Controller
                     /*
                     if($total_iva_12 != floatVal($documento->valorIva12)){
                         $xml = 'El total del valor de IVA de la cabecera no cuadra con el total de la sumatoria de IVA en los detalles, verifique que esten asignados correctamente';
-                        $nombre = "generados/" . $clave_acceso . ".xml";
+                        $nombre = "generados/" . $this->claveAccesoDateFolder($clave_acceso) . $clave_acceso . ".xml";
                         Storage::disk('tenant')->put($nombre, $xml);
                         $this->XmlGenerado = $xml;
                         $this->clave_acceso = $clave_acceso;
@@ -2087,7 +2087,7 @@ class SriDocumentController extends Controller
                         </notaCredito>';
                     }
 
-                    $nombre = "generados/" . $clave_acceso . ".xml";
+                    $nombre = "generados/" . $this->claveAccesoDateFolder($clave_acceso) . $clave_acceso . ".xml";
                     Storage::disk('tenant')->put($nombre, $xml);
                     $this->XmlGenerado = $xml;
                     $this->clave_acceso = $clave_acceso;
@@ -2314,7 +2314,7 @@ class SriDocumentController extends Controller
                     </notaDebito>';
                     }
 
-                    $nombre = "generados/" . $clave_acceso . ".xml";
+                    $nombre = "generados/" . $this->claveAccesoDateFolder($clave_acceso) . $clave_acceso . ".xml";
                     Storage::disk('tenant')->put($nombre, $xml);
                     $this->XmlGenerado = $xml;
                     $this->clave_acceso = $clave_acceso;
@@ -2664,7 +2664,7 @@ class SriDocumentController extends Controller
                     }
 
 
-                    $nombre = "generados/" . $clave_acceso . ".xml";
+                    $nombre = "generados/" . $this->claveAccesoDateFolder($clave_acceso) . $clave_acceso . ".xml";
                     Storage::disk('tenant')->put($nombre, $xml);
                     $this->XmlGenerado = $xml;
                     $this->clave_acceso = $clave_acceso;
@@ -2901,7 +2901,7 @@ class SriDocumentController extends Controller
                     </guiaRemision>';
                     }
 
-                    $nombre = "generados/" . $clave_acceso . ".xml";
+                    $nombre = "generados/" . $this->claveAccesoDateFolder($clave_acceso) . $clave_acceso . ".xml";
                     Storage::disk('tenant')->put($nombre, $xml);
                     $this->XmlGenerado = $xml;
                     $this->clave_acceso = $clave_acceso;
@@ -2924,7 +2924,7 @@ class SriDocumentController extends Controller
             //Log::info("Ruta del CErtificado: ".$this->pathCertificate);
             $this->XmlGenerado = str_replace('&', '&amp;', $this->XmlGenerado);
             $this->xmlSigned = $firma->Firma_SRI($this->clave_acceso, $this->pathCertificate, $this->company->certificate_pass, $this->XmlGenerado);
-            $nombre = "firmados/" . $this->clave_acceso . ".xml";
+            $nombre = "firmados/" . $this->claveAccesoDateFolder($this->clave_acceso) . $this->clave_acceso . ".xml";
             Storage::disk('tenant')->put($nombre, $this->xmlSigned);
             return true;
         } catch (Exception $ex) {
@@ -3145,7 +3145,7 @@ class SriDocumentController extends Controller
                 // Función para convertir el array a XML recursivamente
                 $this->arrayToXmlHelper($authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion'], $documento);
 
-                $nombre = $nombre = "autorizados/" . $this->documento->claveAcceso . ".xml";
+                $nombre = "autorizados/" . $this->claveAccesoDateFolder($this->documento->claveAcceso) . $this->documento->claveAcceso . ".xml";
                 Storage::disk('tenant')->put($nombre, $documento->asXML());
                 $tipodoc = '';
 
@@ -3530,7 +3530,7 @@ class SriDocumentController extends Controller
             $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
         }
 
-        $nombre = "pdf/" . $this->documento->claveAcceso . ".pdf";
+        $nombre = "pdf/" . $this->claveAccesoDateFolder($this->documento->claveAcceso) . $this->documento->claveAcceso . ".pdf";
         Storage::disk('tenant')->put($nombre, $pdf->output('', 'S'));
         return $this;
     }

@@ -63,11 +63,13 @@ class TenancyServiceProvider extends ServiceProvider
             Events\InitializingTenancy::class => [],
             Events\TenancyInitialized::class => [
                 Listeners\BootstrapTenancy::class,
+                [$this, 'bootstrapTenantFilesystem'],
             ],
 
             Events\EndingTenancy::class => [],
             Events\TenancyEnded::class => [
                 Listeners\RevertToCentralContext::class,
+                [$this, 'revertTenantFilesystem'],
             ],
 
             Events\BootstrappingTenancy::class => [],
@@ -103,6 +105,30 @@ class TenancyServiceProvider extends ServiceProvider
         }
     }
 
+    /**
+     * Antes hyn/multi-tenant registraba automaticamente un disco 'tenant' por
+     * cliente; stancl/tenancy no lo hace (solo se activo el bootstrapper de
+     * base de datos). Sin esto, Storage::disk('tenant') (usado por
+     * StorageDocument y todo el guardado de XML/PDF) no tiene driver
+     * configurado. La raiz sigue la misma convencion que ya usa
+     * BackupFiles.php: storage/app/tenancy/tenants/{tenant_id}.
+     */
+    public function bootstrapTenantFilesystem(Events\TenancyInitialized $event)
+    {
+        $this->app['config']->set('filesystems.disks.tenant', [
+            'driver' => 'local',
+            'root' => storage_path('app/tenancy/tenants/' . $event->tenancy->tenant->getTenantKey()),
+        ]);
+
+        $this->app['filesystem']->forgetDisk('tenant');
+    }
+
+    public function revertTenantFilesystem()
+    {
+        $this->app['config']->set('filesystems.disks.tenant', null);
+        $this->app['filesystem']->forgetDisk('tenant');
+    }
+
     protected function mapRoutes()
     {
         $this->app->booted(function () {
@@ -114,6 +140,14 @@ class TenancyServiceProvider extends ServiceProvider
                 Route::namespace(static::$controllerNamespace)
                     ->group(base_path('routes/tenant_api.php'));
             }
+
+            // Estas rutas se cargan despues del arranque normal del router (via
+            // app()->booted()), momento en el que Laravel ya construyo su tabla
+            // de busqueda por nombre para web.php/api.php. Sin este refresh, los
+            // nombres de ruta definidos aqui (incluido los de Auth::routes())
+            // quedan invisibles para route()/has(), aunque el matching por URL
+            // entrante funcione con normalidad.
+            Route::getRoutes()->refreshNameLookups();
         });
     }
 

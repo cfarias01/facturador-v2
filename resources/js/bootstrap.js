@@ -1,12 +1,14 @@
 import Vue from 'vue';
-window._ = require('lodash');
-window.moment = require('moment');
-//window.Popper = require('popper.js').default;
+import _ from 'lodash';
+import moment from 'moment';
+// jquery-globals debe importarse antes que 'bootstrap' y que vendor/* (mas
+// abajo): fija window.jQuery/$ que esos plugins UMD necesitan encontrar ya
+// disponible en window cuando se ejecutan (ver comentario en ese archivo).
+import $ from './vendor/jquery-globals';
+import 'bootstrap';
 
-try {
-    window.$ = window.jQuery = require('jquery');
-    require('bootstrap');
-} catch (e) {}
+window._ = _;
+window.moment = moment;
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -40,10 +42,11 @@ Vue.prototype.$getStorage = function(name){
     return JSON.parse(localStorage.getItem(name));
 };
 
-require('./vendor/perfect-scrollbar.jquery.min')
-require('./vendor/sidebarmenu')
-require('./vendor/waves')
-require('./vendor/custom')
+// perfect-scrollbar/sidebarmenu/waves/custom (public/js/vendor/*, cargados
+// como <script> clasico en los layouts, no via import): son UMD que Rollup
+// no puede empaquetar correctamente en el grafo de modulos ES (su rama
+// require('jquery') queda como codigo real inejecutable en el navegador).
+// Ver layouts tenant/system app.blade.php.
 
 $(function () {
     const listElements = document.getElementsByClassName('nav-active');

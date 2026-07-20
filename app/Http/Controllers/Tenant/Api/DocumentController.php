@@ -110,8 +110,8 @@ class DocumentController extends Controller
 
         // $zipFly = new ZipFly();
 
-        $this->uploadStorage($document->filename, base64_decode($data_json->file_xml_signed), 'signed');
-        $this->uploadStorage($document->filename, base64_decode($data_json->file_pdf), 'pdf');
+        $this->uploadStorage($document->filename, base64_decode($data_json->file_xml_signed), 'signed', null, $document->date_of_issue);
+        $this->uploadStorage($document->filename, base64_decode($data_json->file_pdf), 'pdf', null, $document->date_of_issue);
 
         $document->external_id = $data_json->external_id;
         $document->hash = $data_json->hash;
@@ -136,7 +136,7 @@ class DocumentController extends Controller
         $document = Document::where('external_id', $external_id)->first();
 
         if ($document->state_type_id === '05' && $document->group_id === '01') {
-            $file_cdr = base64_encode($this->getStorage($document->filename, 'cdr'));
+            $file_cdr = base64_encode($this->getStorage($document->filename, 'cdr', null, $document->date_of_issue));
         } else {
             $file_cdr = null;
         }

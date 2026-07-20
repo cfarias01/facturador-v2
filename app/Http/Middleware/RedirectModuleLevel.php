@@ -7,6 +7,7 @@
     use Illuminate\Database\Eloquent\Collection;
     use Illuminate\Http\RedirectResponse;
     use Illuminate\Http\Request;
+    use Illuminate\Support\Facades\Route;
     use Modules\LevelAccess\Models\ModuleLevel;
     use Modules\LevelAccess\Traits\SystemActivityTrait;
 
@@ -283,71 +284,41 @@
             // registrar log de actividades cuando el usuario no tiene permiso
             $this->saveGeneralSystemActivity(auth()->user(), 'level_module_access_error', $this->route_path);
 
-            switch ($level) {
+            $routes = [
+                'new_document' => 'tenant.documents.create',
+                'list_document' => 'tenant.documents.index',
+                'document_not_sent' => 'tenant.documents.not_sent',
+                'document_contingengy' => 'tenant.contingencies.index',
+                'items' => 'tenant.items.index',
+                'summary_voided' => 'tenant.summaries.create',
+                'quotations' => 'tenant.quotations.create',
+                'sale_notes' => 'tenant.sale_notes.create',
+                'incentives' => 'tenant.incentives.create',
+                'sale-opportunity' => 'tenant.sale_opportunities.index',
+                'contracts' => 'tenant.contracts.create',
+                'order-note' => 'tenant.order_notes.create',
+                'technical-service' => 'tenant.technical_services.create',
+                'purchases_orders' => 'tenant.purchase-orders.index',
+                'digemid' => 'tenant.digemid.index',
+                'configuration_visual' => 'tenant.general_configuration.index',
+                'configuration_advance' => 'tenant.general_configuration.index',
+                'configuration_company' => 'tenant.general_configuration.index',
+                'suscription_app_client' => 'tenant.suscription.client.index',
+                'suscription_app_service' => 'tenant.suscription.client.index',
+                'suscription_app_payments' => 'tenant.suscription.client.index',
+                'suscription_app_plans' => 'tenant.suscription.client.index',
+            ];
 
-                case 'new_document':
-                    return redirect()->route('tenant.documents.create');
+            // Algunos de estos destinos ya no existen (controladores retirados en
+            // limpiezas anteriores); si el destino esperado no esta definido, cae
+            // al dashboard en vez de lanzar RouteNotFoundException.
+            $route = $routes[$level] ?? null;
 
-                case 'list_document':
-                    return redirect()->route('tenant.documents.index');
-
-                case 'document_not_sent':
-                    return redirect()->route('tenant.documents.not_sent');
-
-                case 'document_contingengy':
-                    return redirect()->route('tenant.contingencies.index');
-
-                case 'items':
-                    return redirect()->route('tenant.items.index');
-
-                case 'summary_voided':
-                    return redirect()->route('tenant.summaries.create');
-
-                case 'quotations':
-                    return redirect()->route('tenant.quotations.create');
-
-                case 'sale_notes':
-                    return redirect()->route('tenant.sale_notes.create');
-
-                case 'incentives':
-                    return redirect()->route('tenant.incentives.create');
-
-
-                case 'sale-opportunity':
-                    return redirect()->route('tenant.sale_opportunities.index');
-
-                case 'contracts':
-                    return redirect()->route('tenant.contracts.create');
-
-                case 'order-note':
-                    return redirect()->route('tenant.order_notes.create');
-
-                case 'technical-service':
-                    return redirect()->route('tenant.technical_services.create');
-
-                case 'purchases_orders':
-                    return redirect()->route('tenant.purchase-orders.index');
-                case 'digemid':
-                    return redirect()->route('tenant.digemid.index');
-                case 'configuration_visual':
-                case 'configuration_advance':
-                case 'configuration_company':
-                    //'configuration_visual' 'configuration_advance' 'configuration_company' redirecciona a configuracion
-                    return redirect()->route('tenant.general_configuration.index');
-
-                case  "suscription_app_client":
-                case  "suscription_app_service":
-                case  "suscription_app_payments":
-                case  "suscription_app_plans":
-                return redirect()->route('tenant.suscription.client.index');
-                    //return redirect()->route('tenant.suscription.service.index');
-                    //return redirect()->route('tenant.suscription.payments.index');
-                    //return redirect()->route('tenant.suscription.plans.index');
-                default;
-                    return redirect()->route('tenant.dashboard.index');
-
-
+            if ($route && Route::has($route)) {
+                return redirect()->route($route);
             }
+
+            return redirect()->route('tenant.dashboard.index');
         }
 
     }

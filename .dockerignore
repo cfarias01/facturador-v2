@@ -1,25 +1,34 @@
-**/.classpath
-**/.dockerignore
-**/.env
-**/.git
-**/.gitignore
-**/.project
-**/.settings
-**/.toolstarget
-**/.vs
-**/.vscode
-**/*.*proj.user
-**/*.dbmdl
-**/*.jfm
-**/bin
-**/charts
-**/docker-compose*
-**/compose*
-**/Dockerfile*
-**/node_modules
-**/npm-debug.log
-**/obj
-**/secrets.dev.yaml
-**/values.dev.yaml
-LICENSE
-README.md
+.git
+.gitignore
+.github
+
+# Dependencias: se reinstalan dentro de la imagen, no hace falta copiarlas
+node_modules
+vendor
+
+# Assets compilados: se generan en el stage frontend del Dockerfile; un
+# public/build o public/hot viejo del host confundiria a Laravel (@vite
+# intentaria usar el dev server de Vite en vez de los assets del build)
+public/build
+public/hot
+public/storage
+
+# Runtime/logs: se recrean al arrancar el contenedor
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/app/tenancy/tenants/*
+bootstrap/cache/*.php
+
+.env
+.env.*
+!.env.example
+
+.phpunit.result.cache
+tests
+docs
+
+.idea
+.vscode
+*.log

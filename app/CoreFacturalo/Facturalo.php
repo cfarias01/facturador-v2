@@ -754,7 +754,7 @@ class Facturalo
 
     public function loadXmlSigned()
     {
-        $this->xmlSigned = $this->getStorage($this->document->filename, 'signed');
+        $this->xmlSigned = $this->getStorage($this->document->filename, 'signed', null, $this->document->date_of_issue);
         //        dd($this->xmlSigned);
         return $this;
     }
@@ -854,7 +854,7 @@ class Facturalo
                 $this->actions['format_pdf'] = 'blank';
                 $this->createPdf($this->document, $tipodoc, 'a4');
                 $temp = tempnam(sys_get_temp_dir(), 'pdf');
-                file_put_contents($temp, $this->getStorage($this->document->filename, 'pdf'));
+                file_put_contents($temp, $this->getStorage($this->document->filename, 'pdf', null, $this->document->date_of_issue));
                 $this->sendEmail2();
             } elseif ($estado == 'NO AUTORIZADO') {
 
@@ -1255,7 +1255,7 @@ class Facturalo
 
     public function uploadFile($file_content, $file_type)
     {
-        $this->uploadStorage($this->document->filename, $file_content, $file_type);
+        $this->uploadStorage($this->document->filename, $file_content, $file_type, null, $this->document->date_of_issue);
     }
 
     private function setDataSoapType()

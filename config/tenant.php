@@ -2,6 +2,7 @@
 
 return [
     'app_url_base' => rtrim((string) env('APP_URL_BASE'), '/'),
+    'prefix_url' => env('PREFIX_URL'),
     'items_per_page' => env('ITEMS_PER_PAGE', 20),
     'items_per_page_simple_d_table' => env('ITEMS_PER_PAGE_SIMPLE_D_TABLE', 5),
     'items_per_page_simple_d_table_params' => env('ITEMS_PER_PAGE_SIMPLE_D_TABLE_PARAMS', 10),

@@ -61,7 +61,7 @@ class DownloadController extends Controller
                 throw new Exception('Tipo de archivo a descargar es inválido');
         }
 
-        return $this->downloadStorage($document->claveAcceso, $folder);
+        return $this->downloadStorage($document->claveAcceso, $folder, null, $this->claveAccesoIssueDate($document->claveAcceso));
     }
 
     /**
@@ -113,7 +113,7 @@ class DownloadController extends Controller
 
         $temp = tempnam(sys_get_temp_dir(), 'pdf');
 
-        file_put_contents($temp, $this->getStorage($document->claveAcceso, 'pdf'));
+        file_put_contents($temp, $this->getStorage($document->claveAcceso, 'pdf', null, $this->claveAccesoIssueDate($document->claveAcceso)));
 
         /*
         $headers = [

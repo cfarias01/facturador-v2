@@ -32,10 +32,10 @@
                 <ul class="list-unstyled mb-0">
                     <li>
                         <a role="menuitem" href="{{ route('system.users.create') }}"><i class="fas fa-user"></i> Perfil</a>
-                        <a role="menuitem" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <a role="menuitem" href="{{ route('system.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <i class="fas fa-power-off"></i> @lang('app.buttons.logout')
                         </a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        <form id="logout-form" action="{{ route('system.logout') }}" method="POST" style="display: none;">
                             @csrf
                         </form>
                     </li>

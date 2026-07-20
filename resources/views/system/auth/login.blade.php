@@ -10,7 +10,7 @@
                     <h1 class="display-3 position-absolute text-left font-weight-bold" style="left: 90%; margin-top: -35px; color: rgba(255,255,255,.1);">5</h1>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('login') }}">
+                    <form method="POST" action="{{ route('system.login') }}">
                         @csrf
                         <div class="form-group mb-3">
                             <label>Correo electrónico</label>

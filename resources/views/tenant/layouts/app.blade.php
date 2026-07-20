@@ -48,7 +48,7 @@
 
     <title>Facturación Electrónica</title>
 
-    <link async href="{{ mix('css/app.css') }}" rel="stylesheet">
+    @vite('resources/sass/style.scss')
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
 
@@ -117,7 +117,7 @@
     @if ($vc_company->favicon)
     <link rel="shortcut icon" type="image/png" href="{{ asset($vc_company->favicon) }}"/>
     @endif
-    <script defer src="{{ mix('js/app.js') }}"></script>
+    @vite('resources/js/app.js')
 
 </head>
 <body class="pr-0">
@@ -153,6 +153,10 @@
 
     <!-- Vendor -->
     <script src="{{ asset('porto-light/vendor/jquery/jquery.js')}}"></script>
+    <script src="{{ asset('js/vendor/perfect-scrollbar.jquery.min.js') }}"></script>
+    <script src="{{ asset('js/vendor/sidebarmenu.js') }}"></script>
+    <script src="{{ asset('js/vendor/waves.js') }}"></script>
+    <script src="{{ asset('js/vendor/custom.js') }}"></script>
     <script src="{{ asset('porto-light/vendor/jquery-browser-mobile/jquery.browser.mobile.js')}}"></script>
     <script src="{{ asset('porto-light/vendor/jquery-cookie/jquery-cookie.js')}}"></script>
     {{-- <script src="{{ asset('porto-light/master/style-switcher/style.switcher.js')}}"></script> --}}
@@ -175,8 +179,6 @@
 
     @stack('scripts')
 
-    <script src="{{ asset('js/manifest.js') }}"></script>
-    <script src="{{ asset('js/vendor.js') }}"></script>
     <!-- Theme Base, Components and Settings -->
     <script src="{{asset('porto-light/js/theme.js')}}"></script>
 

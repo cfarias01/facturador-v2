@@ -35,8 +35,15 @@ class DocumentEmail extends Mailable
      */
     public function build()
     {
-        $pdf = $this->getStorage($this->document->claveAcceso, 'pdf');
-        $xml = $this->getStorage($this->document->claveAcceso, 'autorizados');
+        // $this->document puede venir como App\Models\Tenant\Document (columna
+        // clave_SRI, flujo Facturalo::sendEmail/sendEmail2) o como
+        // CabeceraDocumentoElectronica (columna claveAcceso, flujo
+        // SriDocumentController::sendEmail2). Se soportan ambos.
+        $claveAcceso = $this->document->claveAcceso ?? $this->document->clave_SRI;
+        $fechaEmision = $this->claveAccesoIssueDate($claveAcceso);
+
+        $pdf = $this->getStorage($claveAcceso, 'pdf', null, $fechaEmision);
+        $xml = $this->getStorage($claveAcceso, 'autorizados', null, $fechaEmision);
         $path = base_path().'/public';
         //$imgUs = File::get($path."/logo/logo2.png");
         //$imgCompany = Storage::get("public/uploads/logos/".$this->company->logo);
@@ -44,11 +51,11 @@ class DocumentEmail extends Mailable
 
         /*if($this->document->tipoComprobante !== 3) {
 
-            if($this->existFileInStorage($this->document->claveAcceso, 'cdr'))
+            if($this->existFileInStorage($claveAcceso, 'cdr', null, $fechaEmision))
             {
-                $cdr = $this->getStorage($this->document->claveAcceso, 'cdr');
+                $cdr = $this->getStorage($claveAcceso, 'cdr', null, $fechaEmision);
             }
-                
+
         }*/
 
         //$image_detraction = ($this->document->detraction) ? (($this->document->detraction->image_pay_constancy) ? storage_path('app'.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'image_detractions'.DIRECTORY_SEPARATOR.$this->document->detraction->image_pay_constancy):false):false;
@@ -65,14 +72,14 @@ class DocumentEmail extends Mailable
         $email = $this->subject($subject)
                     ->from(config('mail.username'), 'Comprobante electrónico')
                     ->view($template_document_mail_view)
-                    ->attachData($pdf, $this->document->claveAcceso.'.pdf')
-                    ->attachData($xml, $this->document->claveAcceso.'.xml');
+                    ->attachData($pdf, $claveAcceso.'.pdf')
+                    ->attachData($xml, $claveAcceso.'.xml');
 
 
         // $file = $this->getCdr($this->document);
         /*
         if(!empty($cdr) ){
-            $email->attachData($cdr, $this->document->claveAcceso.'.zip');
+            $email->attachData($cdr, $claveAcceso.'.zip');
         }
         */
         /*
@@ -86,8 +93,9 @@ class DocumentEmail extends Mailable
 
     public function getCdr($document){
         $file = null;
-        if( !empty($document->claveAcceso)) {
-            $file = $this->getStorage($document->claveAcceso, 'cdr');
+        $claveAcceso = $document->claveAcceso ?? $document->clave_SRI ?? null;
+        if( !empty($claveAcceso)) {
+            $file = $this->getStorage($claveAcceso, 'cdr', null, $this->claveAccesoIssueDate($claveAcceso));
         }
         return $file;
 
