@@ -85,7 +85,51 @@ cualquier persona o sesión futura retome el trabajo sin perder contexto. Rama d
     login HTTP real 200, baja de tenant con borrado de BD. También validado contra el tenant
     real preexistente `carlos` (BD `tenancy_carlos`).
   - `hyn/multi-tenant` removido de `composer.json`/`composer.lock`.
-- [ ] **Fase 3 — Saltos Laravel 10 → 11 → 12 → 13**
+- [ ] **Fase 3 — Saltos Laravel 10 → 11 → 12 → 13** (en progreso)
+  - [x] **Laravel 10 → 11**: `laravel/framework` ^11.0, PHP local pasado de 8.1 a **8.4**
+        (`composer.json` ahora pide `^8.2`). `symfony/*` pineados subidos a `^7.0`,
+        `nunomaduro/collision` a `^8.0`, `phpunit/phpunit` a `^11.0`, `stevebauman/location`
+        subido de 6.x a **7.x** (API de `Location::get()`/`Position` sin cambios, verificado
+        contra el codigo instalado — no requirio tocar `DataClientHelper.php`).
+        `laravelcollective/html` removido (bloqueaba L11 duro): las 3 vistas que usaban el
+        facade `Form::` (`tenant/reports/kardex/index`, `tenant/reports/index_backup`,
+        `system/reports/index`) se reescribieron con HTML nativo + Blade.
+    - **La estructura clasica `app/Http/Kernel.php` / `app/Exceptions/Handler.php` /
+      `bootstrap/app.php` se dejo tal cual** — Laravel 11 sigue soportandola, no es obligatorio
+      migrar a la nueva forma basada en `Application::configure()`. No se toco.
+    - **3 bugs preexistentes encontrados y corregidos durante la validacion** (ninguno
+      introducido por esta migracion, todos ya estaban rotos, solo que nadie los habia
+      disparado):
+      1. `database/migrations/tenant/2021_02_01_102051_add_columns_to_hotel_rents_table.php`
+         intentaba agregar una columna `->after('payment_number_operation')` en el mismo
+         `Schema::table()` donde esa columna se dropea — referencia invalida. El schema
+         builder de Laravel 11 la valida mas estricto que el de L10 y hace fallar el
+         provisioning de cualquier tenant nuevo. Separado en dos `Schema::table()` y sacado
+         el `->after()` (el orden de columnas no afecta nada a nivel de Eloquent).
+      2. Dos migraciones de tenant (`2021_07_05_091229_change_data_to.php`,
+         `2021_07_05_125811_add_field_to_documentary_file.php`) llamaban directo a
+         `Schema::getConnection()->getDoctrineSchemaManager()` (workaround viejo para mapear
+         `enum`→`string` en Doctrine). Ese metodo ya no existe en Laravel 11 (`Schema::change()`
+         dejo de depender de Doctrine DBAL) — se quito el workaround completo, ya no hace falta.
+      3. `System\ClientController::store()`: si `Tenant::create()` fallaba **dentro** del
+         evento `TenantCreated` (ej. por los bugs de arriba), la fila ya se habia insertado en
+         `tenants` pero la asignacion a la variable local `$tenant` nunca se completaba (la
+         excepcion corta el flujo antes de que el `=` termine), asi que el `if ($tenant)` del
+         rollback nunca corria y quedaba un tenant + BD huerfanos. Se agrego un fallback
+         `Tenant::find($subDom)` en el catch.
+    - Validado end-to-end en Laravel 11.55.0 + PHP 8.4: boot OK, login central 200, login
+      tenant 200, y **ciclo completo de alta de un tenant nuevo** (creacion de BD + todas las
+      migraciones de tenant, incluidas las que dependen de `doctrine/dbal` para
+      `renameColumn`/`change()`) sin errores.
+    - **Riesgo para QA manual, no auditado exhaustivamente**: `nesbot/carbon` subio de 2.x a
+      **3.x** (dependencia transitiva de `laravel/framework`). Carbon 3 cambio el
+      comportamiento de signo de varios metodos `diffIn*()`. Hay 13 usos de `->diffIn*(` en
+      `app/` y `modules/`, concentrados en el modulo Finance (calculos de morosidad/vencimiento
+      en `UnpaidTrait`, `ToPay`, etc.) y en `Document`/`AccountsReceivable`. No se tocaron
+      porque no hay forma de validar el resultado correcto sin datos reales — revisar estos
+      calculos especificamente al probar la Fase 3 manualmente.
+  - [ ] Laravel 11 → 12
+  - [ ] Laravel 12 → 13
 - [ ] **Fase 4 — Limpieza final de dependencias y hardening**
 
 Detalle completo de cada fase: ver el plan original en el historial de conversación, o pedirle
@@ -93,10 +137,12 @@ a Claude que lo regenere a partir de este documento — el resumen de cada fase 
 
 ## Resumen de fases pendientes
 
-### Fase 3 — Laravel 10 → 11 → 12 → 13
-10→11: colapsar `app/Http/Kernel.php` y `app/Exceptions/Handler.php` en `bootstrap/app.php`;
-mover `schedule()` de `Console/Kernel.php` a `routes/console.php`. Aquí se cambia el PHP local de
-8.1 a 8.4. 11→12: salto pequeño. 12→13: seguir release notes oficiales al momento de ejecutar.
+### Fase 3 — Laravel 11 → 12 → 13
+11→12: salto pequeño (mayor de mantenimiento). 12→13: seguir release notes oficiales al momento
+de ejecutar (paquete nuevo, sin investigacion previa sobre breaking changes especificos).
+Opcional en cualquiera de los dos: migrar `app/Http/Kernel.php`/`app/Exceptions/Handler.php` a
+la nueva forma de `bootstrap/app.php` — no es obligatorio, Laravel sigue soportando la estructura
+clasica, se dejo asi en el salto 10→11 a proposito para minimizar riesgo.
 
 ### Fase 4 — Limpieza final
 Quitar `fruitcake/laravel-cors` (usar el CORS nativo de Laravel), `laravelcollective/html`,

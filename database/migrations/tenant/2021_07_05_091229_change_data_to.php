@@ -13,13 +13,9 @@ class ChangeDataTo extends Migration
      */
     public function up()
     {
-        // Error con enum
-        Schema::getConnection()
-              ->getDoctrineSchemaManager()
-              ->getDatabasePlatform()
-              ->registerDoctrineTypeMapping('enum', 'string');
-
-
+        // El workaround de Doctrine para mapear 'enum' -> 'string' ya no hace
+        // falta ni existe en Laravel 11+ (Schema::change() dejo de depender
+        // de doctrine/dbal para esto).
         Schema::table('documentary_files', function (Blueprint $table) {
             //
             $table->mediumText('number')->nullable()->change();

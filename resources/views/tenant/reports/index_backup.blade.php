@@ -11,41 +11,49 @@
                 </div></div>
             <div class="card-body">
 
-                @if (Session::has('form_document_list'))
-                {{ Form::model(Session::get('form_document_list'), ['role' => 'form', 'autocomplete' => 'off', 'method' => 'POST']) }}
-                @else
-                {{ Form::open(['role' => 'form', 'autocomplete' => 'off', 'method' => 'POST']) }}
-                @endif
+                @php
+                    $formData = Session::get('form_document_list', []);
+                @endphp
+                <form role="form" autocomplete="off" method="POST">
+                    @csrf
                 <div class="box-body">
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
-                                {{ Form::label('document_type', 'Tipo de Documento') }}
-                                {{ Form::select('document_type', ['' => 'Todos', '01'=> 'Factura', '03' => 'Boleta', '07' => 'Nota de Credito', '08' => 'Nota de Debito'], null, array('class' => 'form-control')) }}
+                                <label for="document_type">Tipo de Documento</label>
+                                <select name="document_type" id="document_type" class="form-control">
+                                    @foreach (['' => 'Todos', '01' => 'Factura', '03' => 'Boleta', '07' => 'Nota de Credito', '08' => 'Nota de Debito'] as $value => $label)
+                                        <option value="{{ $value }}" @selected(($formData['document_type'] ?? '') == $value)>{{ $label }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                {{ Form::label('serie', 'Serie') }}
-                                {{ Form::text('serie', null, array('class' => 'form-control')) }}
+                                <label for="serie">Serie</label>
+                                <input type="text" name="serie" id="serie" class="form-control" value="{{ $formData['serie'] ?? '' }}">
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                {{ Form::label('number', 'Correlativo') }}
-                                {{ Form::text('number', null, array('class' => 'form-control')) }}
+                                <label for="number">Correlativo</label>
+                                <input type="text" name="number" id="number" class="form-control" value="{{ $formData['number'] ?? '' }}">
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                {{ Form::label('total', 'Importe Total') }}
-                                {{ Form::text('total', null, array('class' => 'form-control')) }}
+                                <label for="total">Importe Total</label>
+                                <input type="text" name="total" id="total" class="form-control" value="{{ $formData['total'] ?? '' }}">
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                {{ Form::label('state', 'Estado') }}
-                                {{ Form::select('state', $states, 0, array('class' => 'form-control')) }}
+                                <label for="state">Estado</label>
+                                <select name="state" id="state" class="form-control">
+                                    @foreach ($states as $value => $label)
+                                        <option value="{{ $value }}" @selected($value == 0)>{{ $label }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
 
@@ -54,26 +62,26 @@
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
-                                {{ Form::label('ruc', 'RUC Cliente') }}
-                                {{ Form::text('ruc', null, array('class' => 'form-control')) }}
+                                <label for="ruc">RUC Cliente</label>
+                                <input type="text" name="ruc" id="ruc" class="form-control" value="{{ $formData['ruc'] ?? '' }}">
                             </div>
                         </div>
                         <div class="col-md-5">
                             <div class="form-group">
-                                {{ Form::label('client', 'Cliente') }}
-                                {{ Form::text('client', null, array('class' => 'form-control')) }}
+                                <label for="client">Cliente</label>
+                                <input type="text" name="client" id="client" class="form-control" value="{{ $formData['client'] ?? '' }}">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                {{ Form::label('daterange', 'Rango Fechas de Emisión') }}
+                                <label for="daterange">Rango Fechas de Emisión</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">
                                             <i class="fa fa-calendar"></i>
                                         </span>
                                     </div>
-                                    {{ Form::text('daterange', null, array('class' => 'form-control pull-right')) }}
+                                    <input type="text" name="daterange" id="daterange" class="form-control pull-right" value="{{ $formData['daterange'] ?? '' }}">
                                 </div>
                             </div>
                         </div>
@@ -81,10 +89,10 @@
                 </div>
                 <br>
                 <div class="box-footer">
-                    {{ Form::submit('Buscar', array('class' => 'btn btn-primary'))}}
-                    {{ Form::reset('Limpiar', array('class' => 'btn btn-default btn_reset'))}}
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+                    <button type="reset" class="btn btn-default btn_reset">Limpiar</button>
                 </div>
-                {{ Form::close() }}
+                </form>
 
 
                 @if(!empty($reports) && $reports->count())

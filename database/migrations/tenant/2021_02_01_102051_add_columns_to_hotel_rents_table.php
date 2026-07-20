@@ -16,7 +16,15 @@ class AddColumnsToHotelRentsTable extends Migration
 		Schema::table('hotel_rents', function (Blueprint $table) {
 			$table->dropColumn('payment_type');
 			$table->dropColumn('payment_number_operation');
-			$table->date('input_date')->nullable()->after('payment_number_operation');
+		});
+
+		// Se agregan en un Schema::table() separado porque el original
+		// intentaba posicionar ambas columnas "after('payment_number_operation')",
+		// una columna que se dropea en el mismo bloque -- bug preexistente que
+		// nunca fallo hasta ahora porque el schema builder de versiones previas
+		// de Laravel no validaba esa referencia contra el estado post-drop.
+		Schema::table('hotel_rents', function (Blueprint $table) {
+			$table->date('input_date')->nullable();
 			$table->string('input_time', 8)->nullable()->after('input_date');
 		});
 	}

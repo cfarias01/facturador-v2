@@ -11,11 +11,9 @@
          * @return void
          */
         public function up() {
-            Schema::getConnection()
-                  ->getDoctrineSchemaManager()
-                  ->getDatabasePlatform()
-                  ->registerDoctrineTypeMapping('enum', 'string');
-
+            // El workaround de Doctrine para mapear 'enum' -> 'string' ya no
+            // hace falta ni existe en Laravel 11+ (Schema::change() dejo de
+            // depender de doctrine/dbal para esto).
             Schema::table('documentary_file_offices', function (Blueprint $table) {
                 $table->longText('office_name')->nullable()->comment('Nombre de la etapa');
                 $table->longText('process_name')->nullable()->comment('Nombre del tramite');

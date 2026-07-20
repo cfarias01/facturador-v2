@@ -15,8 +15,12 @@
                             {{csrf_field()}}
                             <div class="box ">
                                 <div class="box-body no-padding">
-                                    {{Form::label('item_id', 'Producto')}}
-                                    {{Form::select('item_id', $items->pluck('description', 'id'), old('item_id', request()->item_id), ['class' => 'form-control col-md-6'])}}
+                                    <label for="item_id">Producto</label>
+                                    <select name="item_id" id="item_id" class="form-control col-md-6">
+                                        @foreach ($items->pluck('description', 'id') as $id => $description)
+                                            <option value="{{ $id }}" @selected(old('item_id', request()->item_id) == $id)>{{ $description }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <div class="el-form-item col-xs-12">
                                     <div class="el-form-item__content">

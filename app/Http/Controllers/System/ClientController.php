@@ -641,11 +641,24 @@ class ClientController extends Controller
                 DB::connection('system')->rollBack();
             }
 
+            // $tenant puede seguir siendo null aca si la excepcion salto
+            // DENTRO de Tenant::create() (ej. la migracion de la BD del
+            // tenant fallo durante el evento TenantCreated) -- en ese caso
+            // la fila en `tenants` ya se inserto (el create() hace el
+            // INSERT antes de emitir el evento "created"), pero la
+            // asignacion a $tenant nunca se completo. Por eso se busca de
+            // nuevo por subdominio en vez de confiar solo en la variable local.
+            $tenant = $tenant ?? Tenant::find($subDom);
+
             if ($tenant) {
                 // Borrado forzado de la BD recien creada, sin importar
                 // TENANCY_DATABASE_AUTO_DELETE: es un rollback de un
                 // provisioning fallido, no un borrado de tenant real.
-                $tenant->database()->manager()->deleteDatabase($tenant);
+                try {
+                    $tenant->database()->manager()->deleteDatabase($tenant);
+                } catch (Exception $cleanupException) {
+                    Log::error('Error deleting tenant database during rollback: ' . $cleanupException->getMessage());
+                }
                 $tenant->delete();
             }
 
