@@ -128,7 +128,13 @@ cualquier persona o sesión futura retome el trabajo sin perder contexto. Rama d
       en `UnpaidTrait`, `ToPay`, etc.) y en `Document`/`AccountsReceivable`. No se tocaron
       porque no hay forma de validar el resultado correcto sin datos reales — revisar estos
       calculos especificamente al probar la Fase 3 manualmente.
-  - [ ] Laravel 11 → 12
+  - [x] **Laravel 11 → 12**: salto pequeño y limpio, como anticipaba el release de Laravel
+        (mayor de mantenimiento). Solo hizo falta subir `barryvdh/laravel-dompdf` de ^2.0 a
+        ^3.0 (bloqueaba duro, `illuminate/support` max ^9 en la v2). Verificado que los metodos
+        usados (`loadView`, `setPaper`, `download`, `stream`) siguen disponibles en dompdf v3
+        (`setPaper` via `__call()` forwarding al `Dompdf` subyacente). Sin bugs nuevos esta vez.
+        Validado en Laravel 12.64.0 + PHP 8.4: boot OK, login central y tenant 200, ciclo
+        completo de alta de tenant sin errores.
   - [ ] Laravel 12 → 13
 - [ ] **Fase 4 — Limpieza final de dependencias y hardening**
 
