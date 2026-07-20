@@ -88,6 +88,7 @@
     @yield('content-mercadopago')
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>window.jquery = window.jQuery;</script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/vendor/perfect-scrollbar.jquery.min.js') }}"></script>
     <script src="{{ asset('js/vendor/sidebarmenu.js') }}"></script>

@@ -1,10 +1,9 @@
 import Vue from 'vue';
 import _ from 'lodash';
 import moment from 'moment';
-// jquery-globals debe importarse antes que 'bootstrap' y que vendor/* (mas
-// abajo): fija window.jQuery/$ que esos plugins UMD necesitan encontrar ya
-// disponible en window cuando se ejecutan (ver comentario en ese archivo).
-import $ from './vendor/jquery-globals';
+// 'jquery' esta aliaseado (vite.config.js) a la instancia global real, ver
+// resources/js/vendor/jquery-shim.js.
+import $ from 'jquery';
 import 'bootstrap';
 
 window._ = _;

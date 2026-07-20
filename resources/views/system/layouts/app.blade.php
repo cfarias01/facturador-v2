@@ -90,6 +90,7 @@
 
     <!-- Vendor -->
     <script src="{{ asset('porto-light/vendor/jquery/jquery.js')}}"></script>
+    <script>window.jquery = window.jQuery;</script>
     <script src="{{ asset('js/vendor/perfect-scrollbar.jquery.min.js') }}"></script>
     <script src="{{ asset('js/vendor/sidebarmenu.js') }}"></script>
     <script src="{{ asset('js/vendor/waves.js') }}"></script>
