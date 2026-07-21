@@ -15,7 +15,7 @@ class TenantSystemTable extends Migration
     public function up()
     {
         Schema::create('state_types', function (Blueprint $table) {
-            $table->char('id', 2)->index();
+            $table->char('id', 2)->primary();
             $table->string('description');
         });
         //JOINSOFTWARE ESTADOS DE DOCUMENTOS EN EL SRI//
@@ -32,7 +32,7 @@ class TenantSystemTable extends Migration
         ]);
 
         Schema::create('soap_types', function (Blueprint $table) {
-            $table->char('id', 2)->index();
+            $table->char('id', 2)->primary();
             $table->string('description');
         });
 
@@ -42,7 +42,7 @@ class TenantSystemTable extends Migration
         ]);
 
         Schema::create('groups', function (Blueprint $table) {
-            $table->char('id', 2)->index();
+            $table->char('id', 2)->primary();
             $table->string('description');
         });
 
@@ -52,7 +52,7 @@ class TenantSystemTable extends Migration
         ]);
 
         Schema::create('item_types', function (Blueprint $table) {
-            $table->char('id', 2)->index();
+            $table->char('id', 2)->primary();
             $table->string('description');
         });
 
