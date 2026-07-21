@@ -4,6 +4,14 @@ set -e
 # Compartido por los 3 servicios (app/queue/scheduler, ver docker-compose.yml),
 # diferenciados por APP_ROLE. Idempotente: seguro de correr en cada arranque.
 
+# storage/ vive en un volumen (storage_data en compose.yaml) montado sobre el
+# directorio ya chowneado en el Dockerfile. El volumen no hereda esos permisos
+# (Docker solo copia el contenido inicial la primera vez que se crea), y este
+# script corre como root, asi que sin este chown los archivos que crea
+# (logs, cache) quedan root:root e inaccesibles para el www-data que corre
+# Apache.
+chown -R www-data:www-data storage bootstrap/cache
+
 php artisan storage:link || true
 
 if [ "$APP_ROLE" = "web" ]; then

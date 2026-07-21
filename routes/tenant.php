@@ -29,7 +29,7 @@ Route::middleware(['web', InitializeTenancyByDomain::class, PreventAccessFromCen
         ]);
 
         Route::get('search', 'Tenant\SearchController@index')->name('search.index');
-        Route::get('buscar', 'Tenant\SearchController@index')->name('search.index');
+        Route::get('buscar', 'Tenant\SearchController@index');
         Route::get('search/tables', 'Tenant\SearchController@tables');
         Route::post('search', 'Tenant\SearchController@store');
 

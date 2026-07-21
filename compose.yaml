@@ -7,6 +7,8 @@ services:
       MYSQL_DATABASE: ${DB_DATABASE:-facturadorsri}
       MYSQL_USER: ${DB_USERNAME:-facturador}
       MYSQL_PASSWORD: ${DB_PASSWORD:-facturador}
+    ports:
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
