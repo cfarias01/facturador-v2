@@ -7,10 +7,12 @@ services:
       MYSQL_DATABASE: ${DB_DATABASE:-facturadorsri}
       MYSQL_USER: ${DB_USERNAME:-facturador}
       MYSQL_PASSWORD: ${DB_PASSWORD:-facturador}
+      TENANT_DB_PREFIX: ${PREFIX_DATABASE:-tenancy}
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./docker/mysql-init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-root}"]
       interval: 5s
