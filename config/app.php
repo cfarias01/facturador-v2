@@ -167,7 +167,13 @@ return [
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
 
         ZanySoft\Zip\ZipServiceProvider::class,
-        Barryvdh\Debugbar\ServiceProvider::class,
+        // Fruitcake\LaravelDebugbar\ServiceProvider::class, -- NO registrar a mano:
+        // barryvdh/laravel-debugbar solo esta en require-dev (correcto, es una
+        // herramienta de debug). Con --no-dev (build de produccion, ver
+        // Dockerfile) el paquete no se instala, y un provider hardcodeado
+        // aca haria fallar CADA request con "Class not found". El paquete
+        // ya se auto-registra via Laravel package discovery cuando SI esta
+        // instalado (dev/local), asi que no hace falta listarlo aca.
 
         Orchestra\Parser\XmlServiceProvider::class,
 
