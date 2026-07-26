@@ -56,9 +56,12 @@ use Carbon\Carbon;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Symfony\Component\Mailer\Transport;
 use Maatwebsite\Excel\Excel;
 use Modules\BusinessTurn\Models\BusinessTurn;
 use Modules\Document\Helpers\DocumentHelper;
@@ -1081,13 +1084,9 @@ class DocumentController extends Controller
         $mailable = new DocumentEmail($company, $document);
         Configuration::setConfigSmtpMail();
 
-        // Backup your default mailer
-        $backup = Mail::getSwiftMailer();
-        $transport =  new Swift_SmtpTransport(Config::get('mail.host'), Config::get('mail.port'), Config::get('mail.encryption'));
-        $transport->setUsername(Config::get('mail.username'));
-        $transport->setPassword(Config::get('mail.password'));
-        $mailer = new Swift_Mailer($transport);
-        Mail::setSwiftMailer($mailer);
+        $dsn = 'smtp://'.Config::get('mail.username').':'.Config::get('mail.password').'@'.Config::get('mail.host').':'.Config::get('mail.port').'?verify_peer=0';
+
+        Mail::setSymfonyTransport(Transport::fromDsn($dsn));
         Mail::to($email)->send($mailable);
 
         return [

@@ -175,8 +175,6 @@ return [
         // ya se auto-registra via Laravel package discovery cuando SI esta
         // instalado (dev/local), asi que no hace falta listarlo aca.
 
-        Orchestra\Parser\XmlServiceProvider::class,
-
         Modules\Account\Providers\RouteServiceProvider::class,
         Modules\Dashboard\Providers\RouteServiceProvider::class,
         Modules\BusinessTurn\Providers\RouteServiceProvider::class,
@@ -239,7 +237,6 @@ return [
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Image' => Intervention\Image\Facades\Image::class,
         'Zip' => ZanySoft\Zip\ZipFacade::class,
-        'XmlParser' => Orchestra\Parser\Xml\Facade::class,
     ],
 
 ];

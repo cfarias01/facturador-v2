@@ -7,7 +7,7 @@
     use Exception;
     use Illuminate\Support\Facades\Mail;
     use Log;
-    use Swift_RfcComplianceException;
+    use Symfony\Component\Mime\Exception\RfcComplianceException;
     use Illuminate\Support\Facades\Config;
     use Illuminate\Support\Facades\Log as FacadesLog;
 
@@ -95,7 +95,7 @@
                 Mail::to($this->getArrayEmail())->send($mailable);
                 $this->saveModel($ret);
 
-            } catch (Swift_RfcComplianceException $e) {
+            } catch (RfcComplianceException $e) {
                 $ret = false;
                 $this
                     ->setError($e->getMessage())

@@ -39,7 +39,7 @@ use Illuminate\Support\Facades\Log;
 
 use Illuminate\Filesystem\FilesystemManager;
 use App\CoreFacturalo\Helpers\Xml\XmlFormat;
-use Orchestra\Parser\Xml\Facade as XmlParser;
+use App\Support\Xml\SimpleXmlExtractor;
 use DOMDocument;
 
 use App\Models\Tenant\CabeceraDocumentoElectronica;
@@ -54,8 +54,6 @@ use App\Models\Tenant\Destinatarios;
 use App\Models\Tenant\Destinatarios_detalle;
 use App\Models\Tenant\LogSRI;
 use Illuminate\Support\Facades\Config;
-use Swift_Mailer;
-use Swift_SmtpTransport;
 use App\Services\IntegradorService;
 use App\Services\TenantMailerService;
 use Error;
@@ -336,8 +334,7 @@ class SriDocumentController extends Controller
                         $this->readXML($rutaDoc);
 
                         //$XmlDataConvert = XmlFormat::format($this->XmlData);
-                        $xml = XmlParser::extract($this->XmlData);
-                        $documento = $xml->parse([
+                        $documento = SimpleXmlExtractor::extract($this->XmlData, [
                             'estado' => ['uses' => 'estado'],
                             'numeroAutorizacion' => ['uses' => 'numeroAutorizacion'],
                             'ambiente' => ['uses' => 'ambiente'],

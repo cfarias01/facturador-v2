@@ -42,11 +42,11 @@ cualquier persona o sesión futura retome el trabajo sin perder contexto. Rama d
         `Illuminate\Http\Middleware\HandleCors` nativo con el mismo `config/cors.php`).
   - [x] `database/seeds` → `database/seeders` (convención Laravel 8+).
   - [x] Verificado: boot OK (Laravel 10.50.2), `route:list` resuelve 99 rutas sin errores.
-  - [ ] **Pendiente, no bloqueante**: `Swift_SmtpTransport`/`Swift_Mailer`/
-        `Swift_RfcComplianceException` siguen usados directamente (sin pasar por el Mail
-        facade de Laravel) en `Tenant\DocumentController.php` y `Tenant\EmailController.php`/
-        `SriDocumentController.php`. Sigue funcionando porque `swiftmailer/swiftmailer` sigue
-        instalado, pero es codigo legacy a migrar a Symfony Mailer en la Fase 4.
+  - [x] `Swift_SmtpTransport`/`Swift_Mailer`/`Swift_RfcComplianceException` usados directamente
+        en `Tenant\DocumentController.php`/`Tenant\EmailController.php`/`SriDocumentController.php`
+        (documentado aqui como pendiente para la Fase 4): terminó resuelto antes, en la Fase 3,
+        porque bloqueaba duro el salto a Laravel 13 (ver detalle en Fase 3). Ya no queda código
+        que dependa de `swiftmailer/swiftmailer`.
 - [x] **Fase 2 — Reemplazo de `hyn/multi-tenant` por `stancl/tenancy`** (mayor riesgo — completa)
   - Confirmado empíricamente (`composer require laravel/framework:^11.0 --dry-run`):
     `hyn/multi-tenant` 5.9.1 declara `require laravel/framework ^9.0|^10.0` y bloquea duro en
@@ -85,7 +85,7 @@ cualquier persona o sesión futura retome el trabajo sin perder contexto. Rama d
     login HTTP real 200, baja de tenant con borrado de BD. También validado contra el tenant
     real preexistente `carlos` (BD `tenancy_carlos`).
   - `hyn/multi-tenant` removido de `composer.json`/`composer.lock`.
-- [ ] **Fase 3 — Saltos Laravel 10 → 11 → 12 → 13** (en progreso)
+- [x] **Fase 3 — Saltos Laravel 10 → 11 → 12 → 13**
   - [x] **Laravel 10 → 11**: `laravel/framework` ^11.0, PHP local pasado de 8.1 a **8.4**
         (`composer.json` ahora pide `^8.2`). `symfony/*` pineados subidos a `^7.0`,
         `nunomaduro/collision` a `^8.0`, `phpunit/phpunit` a `^11.0`, `stevebauman/location`
@@ -135,7 +135,58 @@ cualquier persona o sesión futura retome el trabajo sin perder contexto. Rama d
         (`setPaper` via `__call()` forwarding al `Dompdf` subyacente). Sin bugs nuevos esta vez.
         Validado en Laravel 12.64.0 + PHP 8.4: boot OK, login central y tenant 200, ciclo
         completo de alta de tenant sin errores.
-  - [ ] Laravel 12 → 13
+  - [x] **Laravel 12 → 13**: release de bajo impacto según el propio upgrade guide de Laravel
+        ("~10 minutos", casi sin breaking changes obligatorios). `laravel/framework` ^13.0,
+        `laravel/tinker` ^3.0, `phpunit/phpunit` ^12.0.
+    - **Dos bloqueadores duros de composer, no anticipados por el upgrade guide** (dependencias
+      de terceros que aún no publicaban soporte para Laravel 13 al momento de este salto):
+      1. `swiftmailer/swiftmailer` 6.3.0 fija `egulias/email-validator: ^2.0|^3.1`, pero
+         `laravel/framework` 13 exige `^4.0` — conflicto irresoluble. Se adelantó el ítem que
+         ya estaba pendiente desde la Fase 1 (Swift_\* usado directo, sin pasar por el Mail
+         facade, en `Tenant\DocumentController.php`/`Tenant\EmailController.php`/
+         `SriDocumentController.php`): reemplazado por el patrón Symfony Mailer que
+         `SriDocumentController.php` ya usaba en otro método (`Transport::fromDsn()` +
+         `Mail::setSymfonyTransport()`), y `Swift_RfcComplianceException` por
+         `Symfony\Component\Mime\Exception\RfcComplianceException`. `swiftmailer/swiftmailer`
+         removido de `composer.json`. Nota: el catch de `Swift_RfcComplianceException` en
+         `EmailController.php` y el bloque completo de `DocumentController.php` (que llamaba
+         `Mail::getSwiftMailer()`/`Config::get()` sin importar esas facades) eran código muerto
+         — ya fallaban con "Class not found" antes de esta migración, independientemente de
+         Swift; quedaron corregidos de paso.
+      2. `orchestra/parser` (usado solo como `XmlParser::extract()->parse()` en
+         `SriDocumentController.php`, para parsear el XML de autorización del SRI) no tiene
+         versión compatible con `illuminate/container` ^13 aún (su última release, v10, tope en
+         ^12), y su propia dependencia real `laravie/parser` tampoco (tope `illuminate/collections`
+         ^12). Bloqueador externo, igual que `hyn/multi-tenant` lo fue para Laravel 11. Con un
+         único call site y un schema fijo (sin colecciones/namespaces/atributos), se reemplazó
+         por `App\Support\Xml\SimpleXmlExtractor` (nuevo, ~40 líneas, sin dependencias), que
+         replica exactamente el subconjunto de comportamiento usado. `orchestra/parser` removido
+         de `composer.json`; el service provider y el alias `XmlParser` removidos de
+         `config/app.php`.
+    - `symfony/http-client`, `symfony/mailgun-mailer`, `symfony/postmark-mailer` subidos de ^7.0
+      a ^8.0, `symfony/process` de ^7.2 a ^8.1 (`laravel/framework` 13 exige `symfony/process`
+      ^8.1 exacto).
+    - **Riesgo para QA manual, no auditado exhaustivamente** (breaking changes de bajo impacto
+      según el upgrade guide oficial, no verificados contra el código real de este proyecto):
+      middleware CSRF renombrado `VerifyCsrfToken` → `PreventRequestForgery` (alias deprecado
+      sigue funcionando, pero cualquier `->withoutMiddleware([VerifyCsrfToken::class])` o
+      exclusión custom debería revisarse); `cache.serializable_classes` ahora default `false`
+      (si algún flujo cachea objetos PHP en vez de arrays, hay que listarlos explícitamente);
+      DELETE con JOIN+ORDER BY+LIMIT en MySQL ahora se compila completo (antes se ignoraba
+      silenciosamente) — revisar si existe algún `DB::table(...)->join(...)->orderBy(...)->limit(...)->delete()`
+      en el código.
+    - Validado en Laravel 13.22.0 + PHP 8.4 (Docker, `mysql:8` limpio): boot OK, login central
+      200, y ciclo completo de alta de un tenant nuevo (creación de BD + las ~140 migraciones de
+      tenant) sin errores.
+    - **Nota aparte, no de esta fase pero descubierta en el camino**: la primera vez que se
+      probó la creación de un tenant contra un MySQL realmente vacío (Docker, en vez de la BD de
+      desarrollo ya poblada de siempre) aparecieron bugs preexistentes de larga data en
+      migraciones de tenant (columnas `id` de tablas catálogo declaradas `->index()` en vez de
+      `->primary()`, rompiendo `foreign()` hacia ellas — `cat_currency_types`, `departments`,
+      `provinces`, `districts`, `countries`, y varias tablas más). Se corrigieron todas (ver
+      commits de esta rama). No están relacionados con Laravel 13; simplemente nunca se habían
+      disparado porque ninguna validación previa de este proyecto había recreado un tenant desde
+      cero contra una base de datos física realmente vacía.
 - [ ] **Fase 4 — Limpieza final de dependencias y hardening**
 
 Detalle completo de cada fase: ver el plan original en el historial de conversación, o pedirle
@@ -143,12 +194,10 @@ a Claude que lo regenere a partir de este documento — el resumen de cada fase 
 
 ## Resumen de fases pendientes
 
-### Fase 3 — Laravel 11 → 12 → 13
-11→12: salto pequeño (mayor de mantenimiento). 12→13: seguir release notes oficiales al momento
-de ejecutar (paquete nuevo, sin investigacion previa sobre breaking changes especificos).
-Opcional en cualquiera de los dos: migrar `app/Http/Kernel.php`/`app/Exceptions/Handler.php` a
-la nueva forma de `bootstrap/app.php` — no es obligatorio, Laravel sigue soportando la estructura
-clasica, se dejo asi en el salto 10→11 a proposito para minimizar riesgo.
+Nota general para Fases 1–3 (ya completas): en cualquier salto de versión quedó pendiente,
+opcional y no bloqueante, migrar `app/Http/Kernel.php`/`app/Exceptions/Handler.php` a la nueva
+forma de `bootstrap/app.php` — Laravel sigue soportando la estructura clásica, se dejó así a
+propósito para minimizar riesgo.
 
 ### Fase 4 — Limpieza final
 Quitar `fruitcake/laravel-cors` (usar el CORS nativo de Laravel), `laravelcollective/html`,
