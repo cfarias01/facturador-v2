@@ -68,15 +68,6 @@ class LoginController extends Controller
 
     protected function authenticated(Request $request, $user)
     {
-        $config = SystemConfiguration::first();
-        if (! $config->use_login_global) {
-            $config = Configuration::first();
-        }
-
-        $useLoginGlobal = $config->use_login_global;
-        $login = $config->login;
-        $company = Company::first();
-
-        return view('tenant.auth.login', compact('company', 'login', 'useLoginGlobal'));
+        return redirect()->intended(route('tenant.dashboard.index'));
     }
 }

@@ -34,6 +34,10 @@ FROM php:8.4-apache AS app
 # compilados por defecto en la imagen base php:8.4-apache. Si se agregan a
 # docker-php-ext-install fallaria el build (no hay fuente que compilar para
 # una extension que ya es parte del core).
+#
+# default-mysql-client (mysql + mysqldump): requerido por `php artisan
+# schema:dump`/`migrate` para cargar database/schema/tenant-schema.sql al
+# aprovisionar un tenant nuevo (ver docs/upgrade/README.md, Fase 3).
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libzip-dev \
         libxml2-dev \
@@ -45,6 +49,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libcurl4-openssl-dev \
         unzip \
         git \
+        default-mysql-client \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" \
         pdo_mysql \

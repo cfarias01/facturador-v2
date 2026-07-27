@@ -91,9 +91,17 @@ return [
             'prefix' => '',
             'strict' => true,
             'engine' => null,
+            // MYSQL_ATTR_SSL_VERIFY_SERVER_CERT fuera del array_filter: es un
+            // valor `false` intencional, y array_filter() lo descartaria por
+            // ser falsy. Sin esto, `php artisan schema:dump`/`migrate` fallan
+            // al shell-earse a `mysql`/`mysqldump` (cliente MariaDB en la
+            // imagen) contra el certificado autofirmado del server MySQL 8
+            // ("TLS/SSL error: self-signed certificate in certificate chain").
             'options' => array_filter([
                 PDO::MYSQL_ATTR_LOCAL_INFILE => true
-            ]),
+            ]) + [
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+            ],
         ]
     ],
 

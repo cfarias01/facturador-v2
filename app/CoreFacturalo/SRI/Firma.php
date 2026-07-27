@@ -305,18 +305,22 @@ class Firma
 
             $pfx = $this->config['file'];
             $password = $this->config['pass'];
-            $nombreKey = "firma_temp3.pem";
+            // Ruta absoluta a storage/app: www-data no tiene permiso de
+            // escritura en public/ (ni en el resto del arbol de la app), y
+            // una ruta relativa depende del cwd del proceso de Apache/PHP,
+            // que no esta garantizado. storage/ si es escribible (ver
+            // docker/entrypoint.sh).
+            $nombreKey = storage_path('app/firma_temp3.pem');
 
             if (file_exists($nombreKey))
                 unlink($nombreKey);
 
-            $aux = 'C:\OpenSSL-Win64\bin\openssl.exe pkcs12 -in ' . $pfx . ' -nocerts -out ' . $nombreKey . ' -passin pass:' . $password . ' -passout pass:' . $password . ' 2>&1';
-            //Log::info("Ejecutando openssl con: /usr/bin/openssl pkcs12 -in " . $pfx . " -nocerts -out " . $nombreKey . ' -passin pass:' . $password . ' -passout pass:' . $password . ' 2>&1');
-         
             if (str_contains(strtoupper(php_uname("s")), "WINDOWS")) {
                 $salida = shell_exec('C:\OpenSSL-Win64\bin\openssl.exe pkcs12 -in ' . $pfx . ' -nocerts -nodes -out ' . $nombreKey . ' -passin pass:' . $password . ' -passout pass:' . $password . ' 2>&1');
             }else{
-                $salida = shell_exec('sudo /usr/bin/openssl pkcs12 -in ' . $pfx . ' -nocerts -nodes -out ' . $nombreKey . ' -passin pass:' . $password . ' -passout pass:' . $password . ' 2>&1');
+                // sudo no esta disponible (ni hace falta) dentro del
+                // contenedor: www-data ya puede ejecutar openssl directo.
+                $salida = shell_exec('/usr/bin/openssl pkcs12 -in ' . $pfx . ' -nocerts -nodes -out ' . $nombreKey . ' -passin pass:' . $password . ' -passout pass:' . $password . ' 2>&1');
                 Log::info($salida);
             }
 
