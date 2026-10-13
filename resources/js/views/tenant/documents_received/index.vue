@@ -54,7 +54,6 @@
 </template>
 
 <script>
-import { data } from 'jquery';
 import DataTable from '../../../components/DataTableDocumentsReceived.vue'
 import { deletable } from '../../../mixins/deletable'
 import { mapActions, mapState } from "vuex/dist/vuex.mjs";

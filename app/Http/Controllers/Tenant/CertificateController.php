@@ -30,7 +30,7 @@ class CertificateController extends Controller
                 $company = Company::active();
                 $password = $request->input('password');
                 $file = $request->file('file');
-                $pfx = file_get_contents($file);
+                $pfx = GenerateCertificate::modernizePfx(file_get_contents($file), $password);
                 $pem = GenerateCertificate::typePEM($pfx, $password);
                 //$name = 'certificate_'.$company->number.'.pem';
                 $name = 'certificate_'.$company->number.'.p12';

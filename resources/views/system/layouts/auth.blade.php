@@ -7,9 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>SIA · Facturación Electrónica</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('logo/logo.ico') }}">
 
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700|Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
 
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/bootstrap/css/bootstrap.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/animate/animate.css') }}" />
@@ -20,9 +21,11 @@
     @if (file_exists(public_path('theme/custom_styles.css')))
         <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
     @endif
+
+    <link rel="stylesheet" href="{{ asset('css/sia-system.css') }}?v={{ filemtime(public_path('css/sia-system.css')) }}" />
 </head>
 
-<body>
+<body class="sia-auth">
 
     <div class="app">
         @yield('content')

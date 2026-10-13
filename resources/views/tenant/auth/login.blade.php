@@ -39,6 +39,10 @@
             </div>
             <button type="submit" class="btn btn-signin btn-block">INICIAR SESIÓN</button>
             @include('tenant.auth.partials.socials')
+            <div class="auth__brand">
+                <img src="{{ asset('logo/icono-app.png') }}" alt="SIA">
+                <span>Facturación Electrónica · SIA by Semaan Group</span>
+            </div>
         </form>
     </article>
 </section>

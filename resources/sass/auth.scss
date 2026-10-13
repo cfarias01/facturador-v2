@@ -1,5 +1,10 @@
-$text-color: #5e5873;
-$blue: #8347e5;
+// Marca SIA
+$text-color: #414141;
+$sia-green: #9AC446;
+$sia-green-dark: #87B337;
+$sia-green-text: #5A7F22;
+$sia-green-light: #F5F9EC;
+$blue: $sia-green-text;
 $montserrat: "Montserrat", sans-serif;
 .auth {
     display: flex;
@@ -74,11 +79,11 @@ $montserrat: "Montserrat", sans-serif;
 }
 .auth__image {
     flex: 1;
-    background-color: #f8f8f8;
+    background-color: $text-color;
     height: 100%;
     position: relative;
     background-position: center;
-    background-size: auto;
+    background-size: cover;
     background-repeat: no-repeat;
 }
 .auth__form {
@@ -88,7 +93,8 @@ $montserrat: "Montserrat", sans-serif;
     padding: 4rem;
     display: flex;
     align-items: center;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    border-top: 4px solid $sia-green;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.35);
     form {
         width: 100%;
     }
@@ -102,10 +108,47 @@ $montserrat: "Montserrat", sans-serif;
     text-transform: uppercase;
 }
 .btn-signin {
-    background-color: $blue;
+    background: linear-gradient(180deg, $sia-green 0%, $sia-green-dark 100%);
+    border: 1px solid $sia-green-dark;
+    border-radius: 8px;
+    padding: 10px;
     font-family: $montserrat;
     font-weight: 600;
+    letter-spacing: .04em;
     color: #fff;
+    &:hover,
+    &:focus,
+    &:active {
+        background: $sia-green-dark;
+        color: #fff;
+        box-shadow: 0 0 0 .2rem rgba($sia-green, .3);
+    }
+}
+.auth .form-control {
+    border-radius: 8px;
+    &:focus {
+        border-color: $sia-green;
+        box-shadow: 0 0 0 .2rem rgba($sia-green, .25);
+    }
+}
+.auth__brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E4E8DC;
+    img {
+        height: 28px;
+        width: auto;
+    }
+    span {
+        font-size: 11px;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: #6B6B6B;
+    }
 }
 .auth__logo {
     position: absolute;
@@ -145,20 +188,17 @@ $montserrat: "Montserrat", sans-serif;
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: $blue;
+        background-color: $sia-green;
         border-radius: 50%;
         color: #fff;
         transition: all 0.15s linear;
         &:hover {
             text-decoration: none;
-            background-color: darken($blue, 15%);
+            background-color: $sia-green-dark;
         }
     }
 }
 @media (max-width: 1024px) {
-    .auth__image {
-        background-size: contain;
-    }
     .auth__form {
         width: 45%;
     }

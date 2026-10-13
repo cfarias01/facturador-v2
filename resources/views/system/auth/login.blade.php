@@ -4,18 +4,19 @@
 
     <section class="body-sign">
         <div class="center-sign">
-            <div class="">
-                <div class="card card-header card-primary" style="background:#0088CC">
-                    <p class="card-title text-center">Acceso al Sistema</p>
-                    <h1 class="display-3 position-absolute text-left font-weight-bold" style="left: 90%; margin-top: -35px; color: rgba(255,255,255,.1);">5</h1>
+            <div class="card sia-login-card">
+                <div class="sia-login-brand">
+                    <img src="{{ asset('logo/logo-principal.png') }}" alt="SIA - Sistema Integrado de Aplicaciones">
+                    <div class="sia-login-module">Facturación Electrónica</div>
                 </div>
                 <div class="card-body">
+                    <h1>Acceso al panel administrador</h1>
                     <form method="POST" action="{{ route('system.login') }}">
                         @csrf
                         <div class="form-group mb-3">
-                            <label>Correo electrónico</label>
+                            <label for="email">Correo electrónico</label>
                             <div class="input-group">
-                                <input id="email" type="email" name="email" class="form-control form-control-lg" value="{{ old('email') }}">
+                                <input id="email" type="email" name="email" class="form-control form-control-lg" value="{{ old('email') }}" autocomplete="email" autofocus>
                                 <span class="input-group-append">
                                     <span class="input-group-text">
                                         <i class="fas fa-user"></i>
@@ -29,9 +30,9 @@
                             @endif
                         </div>
                         <div class="form-group mb-3 {{ $errors->has('password') ? ' error' : '' }}">
-                            <label>Contraseña</label>
+                            <label for="password">Contraseña</label>
                             <div class="input-group">
-                                <input name="password" type="password" class="form-control form-control-lg">
+                                <input id="password" name="password" type="password" class="form-control form-control-lg" autocomplete="current-password">
                                 <span class="input-group-append">
                                     <span class="input-group-text">
                                         <i class="fas fa-lock"></i>
@@ -44,21 +45,17 @@
                                 </label>
                             @endif
                         </div>
-                        <div class="row">
-                            <div class="col-sm-8">
-                                <div class="checkbox-custom checkbox-default">
-                                    <input name="remember" id="RememberMe" type="checkbox" {{ old('remember') ? 'checked' : '' }}>
-                                    <label for="RememberMe">Recordarme</label>
-                                </div>
-                            </div>
-                            <div class="col-sm-4 text-right">
-                                <button type="submit" class="btn btn-primary mt-2">Iniciar sesión</button>
+                        <div class="form-group mb-4">
+                            <div class="checkbox-custom checkbox-default">
+                                <input name="remember" id="RememberMe" type="checkbox" {{ old('remember') ? 'checked' : '' }}>
+                                <label for="RememberMe">Recordarme</label>
                             </div>
                         </div>
+                        <button type="submit" class="btn btn-primary sia-login-submit">Iniciar sesión</button>
                     </form>
                 </div>
             </div>
-            <p class="text-center text-muted mt-3 mb-3">&copy; Copyright {{ date('Y') }}. Todos los derechos reservados</p>
+            <p class="sia-login-footer">&copy; {{ date('Y') }} SIA · By Semaan Group. Todos los derechos reservados</p>
         </div>
     </section>
 

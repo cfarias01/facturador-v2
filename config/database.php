@@ -120,6 +120,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | MySQL Client Binary Path
+    |--------------------------------------------------------------------------
+    |
+    | Carpeta que contiene mysql/mysqldump. Laravel los usa para cargar el
+    | schema dump (database/schema/tenant-schema.sql) al crear un tenant.
+    | Solo hace falta cuando no están en el PATH del servidor web (p. ej.
+    | Laragon en Windows).
+    |
+    */
+
+    'mysql_bin_path' => env('MYSQL_BIN_PATH'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Redis Databases
     |--------------------------------------------------------------------------
     |

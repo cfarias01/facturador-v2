@@ -7,16 +7,16 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Facturación Electrónica</title>
+    <title>SIA · Facturación Electrónica</title>
 
-    <meta name="description" content="Sistema de Facturación Electrónica">
-    <meta name="author" content="Semman Group">
-    <meta icon="image/ico" href="{{ asset('GS_Layout-03.ico') }}">
+    <meta name="description" content="SIA - Sistema Integrado de Aplicaciones · Facturación Electrónica">
+    <meta name="author" content="Semaan Group">
+    <link rel="icon" type="image/x-icon" href="{{ asset('logo/logo.ico') }}">
 
     @vite('resources/sass/style.scss')
 
     <!-- Styles -->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700|Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
 
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/bootstrap/css/bootstrap.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/animate/animate.css') }}" />
@@ -30,6 +30,8 @@
     @if (file_exists(public_path('theme/custom_styles.css')))
         <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
     @endif
+
+    <link rel="stylesheet" href="{{ asset('css/sia-system.css') }}?v={{ filemtime(public_path('css/sia-system.css')) }}" />
 
     {{--<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />--}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.26.29/sweetalert2.min.css" />
@@ -61,13 +63,6 @@
         .descarga {
             color:black;
             padding:5px;
-        }
-        html.sidebar-light:not(.dark) ul.nav-main > li.nav-active > a {
-            color: #0088CC;
-        }
-
-        ul.nav-main > li.nav-active > a {
-            box-shadow: 2px 0 0 #0088CC inset;
         }
     </style>
 

@@ -35,4 +35,10 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    // Binario openssl usado para convertir firmas .p12 con cifrado legacy (RC2/3DES)
+    // que OpenSSL 3 de PHP no puede leer.
+    'openssl' => [
+        'bin' => env('OPENSSL_BIN', 'openssl'),
+    ],
+
 ];

@@ -36,6 +36,8 @@ File: scss
 @import '../css/animate.css';
 @import 'colors/blue';
 
+// Ruta de la fuente de iconos de Element UI resuelta desde la raíz para Vite
+$--font-path: '/node_modules/element-ui/lib/theme-chalk/fonts';
 @import 'element-ui/packages/theme-chalk/src/index';
 
 @import 'components/table';
