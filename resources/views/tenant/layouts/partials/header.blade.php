@@ -8,8 +8,15 @@
         <div class="d-md-none toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
             <i class="fas fa-bars" aria-label="Toggle sidebar"></i>
         </div>
-        <tenant-dialog-header-menu></tenant-dialog-header-menu>
-
+        <div class="sia-company" title="{{ $vc_company->name }}">
+            <span class="sia-company__icon"><i class="fas fa-building"></i></span>
+            <span class="sia-company__text">
+                <span class="sia-company__name">{{ $vc_company->trade_name ?: $vc_company->name }}</span>
+                @if($vc_company->number)
+                    <span class="sia-company__ruc">RUC {{ $vc_company->number }}</span>
+                @endif
+            </span>
+        </div>
     </div>
     <div class="header-right">
 

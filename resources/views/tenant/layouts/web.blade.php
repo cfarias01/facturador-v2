@@ -8,7 +8,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
 {{--    <title>{{ config('app.name', 'Facturación Electrónica') }}</title>--}}
-    <title>Facturación Electrónica</title>
+    <title>SIA · Facturación Electrónica</title>
+    @include('partials.favicon')
     <!-- Scripts -->
 
     <!-- Fonts -->

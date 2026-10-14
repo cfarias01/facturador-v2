@@ -34,18 +34,31 @@
                     </a>
                 </div>
 
-
                 <div class="pt-3">
-                    <h5>Color de fondo del sidebar</h5>
-                    <div class="form-group el-custom-control">
-                        <button :class="{ 'active': visuals.sidebar_theme === 'white' }" type="button" @click="onChangeBgSidebar('white')" class="btn" style="background-color: #ffffff;"></button>
-                        <button :class="{ 'active': visuals.sidebar_theme === 'blue' }" type="button" @click="onChangeBgSidebar('blue')" class="btn" style="background-color: #7367f0;"></button>
-                        <!-- <button :class="{ 'active': visuals.sidebar_theme === 'gray' }" type="button" @click="onChangeBgSidebar('gray')" class="btn" style="background-color: #82868b;"></button> -->
-                        <button :class="{ 'active': visuals.sidebar_theme === 'green' }" type="button" @click="onChangeBgSidebar('green')" class="btn" style="background-color: #28c76f;"></button>
-                        <button :class="{ 'active': visuals.sidebar_theme === 'red' }" type="button" @click="onChangeBgSidebar('red')" class="btn" style="background-color: #ea5455;"></button>
-                        <!-- <button :class="{ 'active': visuals.sidebar_theme === 'warning' }" type="button" @click="onChangeBgSidebar('warning')" class="btn" style="background-color: #ff9f43;"></button> -->
-                        <!-- <button :class="{ 'active': visuals.sidebar_theme === 'ligth-blue' }" type="button" @click="onChangeBgSidebar('ligth-blue')" class="btn" style="background-color: #00cfe8;"></button> -->
-                        <button :class="{ 'active': visuals.sidebar_theme === 'dark' }" type="button" @click="onChangeBgSidebar('dark')" class="btn" style="background-color: #283046;"></button>
+                    <h5>Tema de color</h5>
+                    <div class="sia-themes">
+                        <button v-for="theme in themes"
+                                :key="theme.key"
+                                type="button"
+                                class="sia-theme"
+                                :class="{ 'is-active': currentTheme === theme.key }"
+                                :title="theme.name"
+                                @click="onChangeBgSidebar(theme.key)">
+                            <span class="sia-theme__preview">
+                                <span class="sia-theme__sidebar" :style="{ background: theme.sidebar }">
+                                    <span class="sia-theme__item" :style="{ background: theme.accent }"></span>
+                                    <span class="sia-theme__line" :style="{ background: theme.line }"></span>
+                                    <span class="sia-theme__line" :style="{ background: theme.line }"></span>
+                                </span>
+                                <span class="sia-theme__content">
+                                    <span class="sia-theme__bar" :style="{ background: theme.accent }"></span>
+                                    <span class="sia-theme__row"></span>
+                                    <span class="sia-theme__row"></span>
+                                </span>
+                                <i v-if="currentTheme === theme.key" class="fas fa-check sia-theme__check" :style="{ background: theme.accent }"></i>
+                            </span>
+                            <span class="sia-theme__name">{{ theme.name }}</span>
+                        </button>
                     </div>
                 </div>
 
@@ -117,8 +130,28 @@
                 form: {},
                 visuals: {},
                 skins: {},
-                dialogSkinsVisible: false
+                dialogSkinsVisible: false,
+                // Mismos temas que ConfigurationVisualViewComposer::SIA_THEMES y public/css/sia-tenant.css
+                themes: [
+                    {key: 'sia', name: 'SIA', sidebar: '#414141', accent: '#9AC446', line: 'rgba(255,255,255,.35)'},
+                    {key: 'oceano', name: 'Océano', sidebar: '#0F2A44', accent: '#2F80ED', line: 'rgba(255,255,255,.35)'},
+                    {key: 'violeta', name: 'Violeta', sidebar: '#2E2250', accent: '#7C5CFC', line: 'rgba(255,255,255,.35)'},
+                    {key: 'medianoche', name: 'Medianoche', sidebar: '#111827', accent: '#10B981', line: 'rgba(255,255,255,.35)'},
+                    {key: 'vino', name: 'Vino', sidebar: '#3A1F24', accent: '#E25563', line: 'rgba(255,255,255,.35)'},
+                    {key: 'claro', name: 'Claro', sidebar: '#FFFFFF', accent: '#9AC446', line: 'rgba(65,65,65,.25)'},
+                ],
+                legacyThemes: {
+                    white: 'claro', blue: 'violeta', green: 'sia', red: 'vino', dark: 'medianoche',
+                    gray: 'sia', warning: 'sia', 'ligth-blue': 'oceano',
+                },
             }
+        },
+        computed: {
+            currentTheme() {
+                const saved = this.visuals ? this.visuals.sidebar_theme : null;
+                const theme = this.legacyThemes[saved] || saved;
+                return this.themes.some(t => t.key === theme) ? theme : 'sia';
+            },
         },
         async created() {
             await this.initForm()
@@ -126,7 +159,10 @@
         },
         methods: {
             onChangeBgSidebar(theme) {
-                this.visuals.sidebar_theme = theme;
+                // Vista previa inmediata mientras se guarda (submit recarga la página)
+                const html = document.documentElement;
+                html.className = html.className.replace(/\bsia-theme-[a-z]+\b/g, '').trim() + ' sia-theme-' + theme;
+                this.$set(this.visuals, 'sidebar_theme', theme);
                 this.submit();
             },
             initForm() {
@@ -211,6 +247,108 @@
         &.active{
             box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, .5);
         }
+    }
+}
+
+.sia-themes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.sia-theme {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+
+    &__preview {
+        position: relative;
+        display: flex;
+        height: 52px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 2px solid #E4E8DC;
+        background: #fff;
+        transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+    }
+
+    &__sidebar {
+        width: 34%;
+        padding: 6px 4px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    &__item {
+        height: 7px;
+        border-radius: 3px;
+    }
+
+    &__line {
+        height: 4px;
+        width: 80%;
+        border-radius: 2px;
+    }
+
+    &__content {
+        flex: 1;
+        padding: 6px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        background: #F7F8F5;
+    }
+
+    &__bar {
+        height: 6px;
+        width: 60%;
+        border-radius: 3px;
+    }
+
+    &__row {
+        height: 5px;
+        border-radius: 2px;
+        background: #E2E5DD;
+    }
+
+    &__check {
+        position: absolute;
+        right: 4px;
+        bottom: 4px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 9px;
+        line-height: 16px;
+        text-align: center;
+    }
+
+    &__name {
+        font-size: 11px;
+        font-weight: 600;
+        color: #6B6B6B;
+        text-align: center;
+    }
+
+    &:hover &__preview {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, .12);
+    }
+
+    &.is-active &__preview {
+        border-color: #414141;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, .15);
+    }
+
+    &.is-active &__name {
+        color: #414141;
     }
 }
 </style>

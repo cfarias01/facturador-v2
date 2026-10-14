@@ -11,7 +11,7 @@
 
     <meta name="description" content="SIA - Sistema Integrado de Aplicaciones · Facturación Electrónica">
     <meta name="author" content="Semaan Group">
-    <link rel="icon" type="image/x-icon" href="{{ asset('logo/logo.ico') }}">
+    @include('partials.favicon')
 
     @vite('resources/sass/style.scss')
 

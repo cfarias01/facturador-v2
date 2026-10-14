@@ -1,8 +1,8 @@
 <!DOCTYPE html>
     @if($vc_compact_sidebar->compact_sidebar)
-        <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="fixed sidebar-light no-mobile-device custom-scroll sidebar-left-collapsed">
+        <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="fixed sidebar-sia sia-theme-{{ $siaTheme }} no-mobile-device custom-scroll sidebar-left-collapsed">
     @else
-        <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="fixed sidebar-light no-mobile-device custom-scroll">
+        <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="fixed sidebar-sia sia-theme-{{ $siaTheme }} no-mobile-device custom-scroll">
     @endif
 <head>
     <meta charset="utf-8">
@@ -12,7 +12,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{--    <title>{{ config('app.name', 'Facturación Electrónica') }}</title>--}}
-    <title>Facturación Electrónica</title>
+    <title>SIA · Facturación Electrónica</title>
+    @include('partials.favicon')
 
     <!-- Scripts -->
 
@@ -53,6 +54,7 @@
 
     <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/sia-tenant.css') }}?v={{ filemtime(public_path('css/sia-tenant.css')) }}" />
 
     @if (file_exists(public_path('theme/custom_styles.css')))
         <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />

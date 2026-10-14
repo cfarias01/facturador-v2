@@ -731,7 +731,7 @@ class ClientController extends Controller
                 'header' => 'light',
                 'navbar' => 'fixed',
                 'sidebars' => 'light',
-                'sidebar_theme' => 'white'
+                'sidebar_theme' => 'sia'
             ]),
             'skin_id' => 2,
             'top_menu_a_id' => 1,

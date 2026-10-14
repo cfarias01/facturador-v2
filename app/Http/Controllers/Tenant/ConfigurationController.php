@@ -486,7 +486,7 @@ class ConfigurationController extends Controller
     {
         $configuration = Configuration::first();
         $visual = $configuration->visual;
-        $visual->sidebar_theme = $visual->bg === 'dark' ? 'white' : 'dark';
+        // El modo día/noche ya no cambia el tema SIA elegido en Configuración > Visual
         $visual->bg = $visual->bg === 'dark' ? 'white' : 'dark';
         $configuration->visual = $visual;
         $configuration->save();

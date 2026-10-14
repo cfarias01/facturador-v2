@@ -24,14 +24,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule) {
 
-        $schedule->command('tenancy:run icg:get')->everyMinute()->withoutOverlapping();
-        $schedule->command('tenancy:run sri:see')->everyMinute()->withoutOverlapping();
-        $schedule->command('tenancy:run sri:send')->everyMinute()->withoutOverlapping();
-        $schedule->command('tenancy:run sri:email')->everyFiveMinutes()->withoutOverlapping();
-        $schedule->command('tenancy:run sri:returned')->everyFiveMinutes()->withoutOverlapping();
-        $schedule->command('tenancy:run icg:failed')->everyFourHours()->withoutOverlapping();
-        $schedule->command('tenancy:run icg:returned')->everyFourHours()->withoutOverlapping();
-        $schedule->command('tenancy:run telegram:send')->everyTwoHours()->withoutOverlapping();
+        $schedule->command('tenants:run icg:get')->everyMinute()->withoutOverlapping();
+        $schedule->command('tenants:run sri:see')->everyMinute()->withoutOverlapping();
+        $schedule->command('tenants:run sri:send')->everyMinute()->withoutOverlapping();
+        $schedule->command('tenants:run sri:email')->everyFiveMinutes()->withoutOverlapping();
+        $schedule->command('tenants:run sri:returned')->everyFiveMinutes()->withoutOverlapping();
+        $schedule->command('tenants:run icg:failed')->everyFourHours()->withoutOverlapping();
+        $schedule->command('tenants:run icg:returned')->everyFourHours()->withoutOverlapping();
+        $schedule->command('tenants:run telegram:send')->everyTwoHours()->withoutOverlapping();
 
     }
     /**

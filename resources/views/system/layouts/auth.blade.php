@@ -8,7 +8,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>SIA · Facturación Electrónica</title>
-    <link rel="icon" type="image/x-icon" href="{{ asset('logo/logo.ico') }}">
+    @include('partials.favicon')
 
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700|Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
 

@@ -20,7 +20,7 @@
                 <img src="{{ $vc_company->emailLogo }}"
                      alt="Logo"/>
             @else
-                <img src="{{asset('logo/tulogo.png')}}"
+                <img src="{{asset('logo/sia-mark.png')}}"
                      alt="Logo"/>
             @endif
         </a>

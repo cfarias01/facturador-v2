@@ -4,12 +4,13 @@
     $path[1] = (array_key_exists(1, $path)> 0)?$path[1]:'';
     $path[2] = (array_key_exists(2, $path)> 0)?$path[2]:'';
     $path[0] = ($path[0] === '')?'documents':$path[0];
-    $visual->sidebar_theme = property_exists($visual, 'sidebar_theme')?$visual->sidebar_theme:''
+    // Diseño SIA (public/css/sia-tenant.css): clase base sidebar-sia + paleta elegida sia-theme-*
+    $visual->sidebar_theme = 'sia';
 @endphp
 <html
     lang="{{ str_replace('_', '-', app()->getLocale()) }}"
     class="fixed no-mobile-device custom-scroll
-        sidebar-{{$visual->sidebar_theme ?? ''}}
+        sidebar-{{$visual->sidebar_theme ?? ''}} sia-theme-{{ $siaTheme }}
         {{ ($visual->sidebar_theme == 'white'
         || $visual->sidebar_theme == 'gray'
         || $visual->sidebar_theme == 'green'
@@ -42,11 +43,10 @@
     <meta name="description" content="Sistema de Facturación Electrónica">
     <meta name="author" content="Semman Group">
 
-    <meta icon="image/ico" href="{{ asset('GS_Layout-03.ico') }}">
 
 
 
-    <title>Facturación Electrónica</title>
+    <title>SIA · Facturación Electrónica</title>
 
     @vite('resources/sass/style.scss')
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -78,8 +78,8 @@
 
     <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/sia-tenant.css') }}?v={{ filemtime(public_path('css/sia-tenant.css')) }}" />
 
-    
     @if (file_exists(public_path('theme/custom_styles.css')))
         <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
     @endif
@@ -116,6 +116,8 @@
 
     @if ($vc_company->favicon)
     <link rel="shortcut icon" type="image/png" href="{{ asset($vc_company->favicon) }}"/>
+    @else
+    @include('partials.favicon')
     @endif
     @vite('resources/js/app.js')
 
